@@ -1,0 +1,13 @@
+astroid==2.5.3
+colorama==0.4.4
+cx-Oracle==8.1.0
+ip==21.1.1
+isort==5.8.0
+lazy-object-proxy==1.6.0
+mccabe==0.6.1
+pylint==2.7.4
+PySimpleGUI==4.39.1
+selenium==3.141.0
+toml==0.10.2
+urllib3==1.26.4
+wrapt==1.12.1
