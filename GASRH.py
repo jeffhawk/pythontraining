@@ -8,10 +8,45 @@ RA 19568823
 Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendida de forma autônoma ao curso.
 
 '''
+#Declaração de variáveis globais
+Arq = "biblios.txt"
+Py = 'PySimpleGUI'
+Oracx = 'cx_Oracle'
+biblio = False
+#python -m pip install cx_Oracle
+atua = ''
+
 #Iniciando com a importação das bibliotecas utilizadas
 #Bibliotecas
-import os
-import PySimpleGUI as sg
+# #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las 
+try:
+    import os
+    import PySimpleGUI as sg
+    import cx_Oracle
+    biblio = True
+except ImportError:
+    import sys
+    import pip
+    import subprocess
+    for i in sys.modules.keys():
+        print(i)
+    print('Erro ao tentar importar bibliotecas')
+    atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
+    if atua == 's' or atua == 'S':
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', Py])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', Oracx])
+        '''if not Py in sys.modules.keys():
+            pip.main(['install', Py])
+        if not Oracx in sys.modules.keys():
+            pip.main(['install', Oracx])'''
+        print('Instalação efetuada!')
+        biblio = True
+    else:
+        print('Bibliotecas não  instaladas!')
+        biblio = False
+
+
+
 
 
 #Iniciando o Layout da janela, como tamanho, posição, tema, botões, caixas de texto e etc.

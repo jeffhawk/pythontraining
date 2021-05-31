@@ -1,10 +1,15 @@
 #coding: utf-8
-
-import os
-os.chdir("C:")
-os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
-'''os.chdir("C:\\Courses\\Puc\\sqldeveloper-20.4.1.407.0006-x64\\sqldeveloper")'''
-import cx_Oracle
+try:
+    import os
+    os.chdir("C:")
+    os.chdir("C:\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6")
+    '''os.chdir("C:\\Courses\\Puc\\sqldeveloper-20.4.1.407.0006-x64\\sqldeveloper")'''
+    import cx_Oracle
+except OSError as err:
+    print("OS error: {0}".format(err))
+except:
+    print("Unexpected error:", sys.exc_info()[0])
+    raise
 
 def cadastreAutor (conexao):
     cursor = conexao.cursor()

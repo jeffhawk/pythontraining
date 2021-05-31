@@ -1,61 +1,45 @@
-import os
-import PySimpleGUI as psg
-
 #Declaração de variáveis globais
 Arq = "biblios.txt"
-Var = 'PySimpleGUI'
-
+Py = 'PySimpleGUI'
+Oracx = 'cx_Oracle'
+biblio = False
+#python -m pip install cx_Oracle
 atua = ''
+
+#Importando as bibliotecas
+# #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las 
+try:
+    import os
+    import PySimpleGUI as psg
+    import cx_Oracle
+    biblio = True
+except ImportError:
+    import sys
+    import pip
+    import subprocess
+    for i in sys.modules.keys():
+        print(i)
+    print('Erro ao tentar importar bibliotecas')
+    atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
+    if atua == 's' or atua == 'S':
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', Py])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', Oracx])
+        '''if not Py in sys.modules.keys():
+            pip.main(['install', Py])
+        if not Oracx in sys.modules.keys():
+            pip.main(['install', Oracx])'''
+        print('Instalação efetuada!')
+        biblio = True
+    else:
+        print('Bibliotecas não  instaladas!')
+        biblio = False
 
 
 #Subs, Módulos e Classes
-'''def verificaarquivo():
-        
-    try:
-        with open(Arq, 'r') as f:
-            #print (os.path.exists(Arq))
-            return True
-    except IOError:
-        print ('Arquivo não encontrado!')
-        return False
-'''    
-def verificabiblio():
-    #Usando try conforme apreendido em sala de aula para deixar em bloco de verificação de erro
-    try:
-        #Variável local
-        Flag = 0                                                                        #variável de controle
-
-        os.system('pip freeze > ' + Arq)                                                # Gera um arquivo com as bibliotecas instaladas no Python
-
-        with open(Arq, 'r',encoding='utf8') as j:                                       #Abre o arquivo para leitura
-            for linha in j:                                                             #Lê todas as linhas do arquivo
-                linha = linha.strip('\n')                                               #Quebra as linhas separando-as, colocando cada linha em uma unidade de lista
-                linha = linha.split('==')                                               #Usa o "==" para seccionar e separar o nome da biblioteca
-                #num_lines += 1
-                #num_words += len(words)
-                #print(linha[0])
-                if linha[0] == Var:                                                     #testa se a lista de bibliotecas contém a biblioteca desejada
-                    Flag = 1
-                    print('Bibliotecas Ok!')
-                    print('Bibliotecas encontradas, entrando no sistema.....')
-                    #print(Flag)
-                    return True
-            if Flag == 0:                
-                print('Bibliotecas não encontradas!!!!!!\n')
-                atua = input('Deseja instalar bibliotecas? - S/N :')
-                if atua == 'S' or atua =='s':
-                    print('atualizando bibliotecas.......')
-                    os.system('python -m pip install PySimpleGUI')
-                    return True
-                else:
-                    return False
-    except ValueError:
-        print ("Opção inválida\n")
-        #return False
-
-
+    
+    
 def Main():
-    if verificabiblio() == True:
+    if biblio == True:
         print('Entrou no sistema, OK!')
     else:
         print('Decidiu não instalar e saiu!')
