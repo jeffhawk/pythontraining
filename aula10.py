@@ -29,7 +29,7 @@ def verificabiblio():
         #Abre o arquivo para leitura
         with open(Arq, 'r',encoding='utf8') as j:
             if countar == 0:
-                psg.popup('Verificando blibliotecas necessárias.....',title='Biblios', button_type=POPUP_BUTTONS_NO_BUTTONS, no_titlebar=False, auto_close=True, auto_close_duration=3)
+                psg.popup('Verificando blibliotecas necessárias.....',title='Biblios', button_type=POPUP_BUTTONS_NO_BUTTONS, no_titlebar=True, auto_close=True, auto_close_duration=3)
                 for i in range(1000):
                     psg.PopupAnimated(image_source=DEFAULT_BASE64_LOADING_GIF, time_between_frames=100,message='Loanding....')
                     #sg.time.sleep(3)
@@ -57,7 +57,7 @@ def verificabiblio():
                 else:
                     return False
     except ValueError:
-        print ("Opção inválida\n")
+        print('Opção inválida\n')
         #return False
 
 
