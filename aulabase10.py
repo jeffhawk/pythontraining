@@ -3,22 +3,29 @@ Arq = "biblios.txt"
 Py = 'PySimpleGUI'
 Oracx = 'cx_Oracle'
 biblio = False
+biblios = ['PySimpleGUI','cx_Oracle','os','ctypes','sys','string','pip','subprocess','system']
 #python -m pip install cx_Oracle
 atua = ''
-
+i=0
 #Importando as bibliotecas
 # #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las 
 try:
-    import os
-    import PySimpleGUI as psg
+    import os, ctypes, sys
+    import PySimpleGUI as psg   
+    import string
+    import termcolor
     import cx_Oracle
-    biblio = True
-except ImportError:
-    import sys
     import pip
     import subprocess
-    for i in sys.modules.keys():
+    from os import system
+    biblio = True
+except ImportError:
+    #print (len(biblios))
+    #system('cls')
+    print('Erro ao tentar importar bibliotecas necessárias!!')
+    for i in biblios:
         print(i)
+
     print('Erro ao tentar importar bibliotecas')
     atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
     if atua == 's' or atua == 'S':

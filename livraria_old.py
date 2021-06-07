@@ -1,6 +1,8 @@
 #coding: utf-8
 try:
     import os
+    from os import system
+    from os import sys
     os.chdir("C:")
     os.chdir("C:\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6")
     '''os.chdir("C:\\Courses\\Puc\\sqldeveloper-20.4.1.407.0006-x64\\sqldeveloper")'''
