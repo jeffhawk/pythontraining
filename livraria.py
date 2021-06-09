@@ -1,91 +1,115 @@
 #coding: utf-8
 #Declaração de variáveis globais
-biblio = False
-biblios = ['PySimpleGUI','cx_Oracle','pip','setuptools','termcolor','pywin32']
+global biblio 
+biblios = ['pip','PySimpleGUI','cx_Oracle','setuptools','termcolor','pywin32']
 #caminho = 'C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6'
-caminho = 'D:\instantclient-basic-windows.x64-19.10.0.0.0dbru\instantclient_19_10'
+global caminho
 atua = ''
 i=0
 #Importando as bibliotecas
-# #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las 
-try:
-    import win32api
-    from win32api import GetSystemMetrics
-    import os, ctypes, sys
-    import tkinter
-    import PySimpleGUI as psg
-    import setuptools
-    import string
-    import termcolor
-    import cx_Oracle
-    import pip
-    import subprocess
-    import time
-    from os import system
-    from termcolor import colored
-    biblio = True
-    os.chdir(caminho)
-except ImportError as error1:
-    from os import system
-    system('cls')
-    print("Error: {0}".format(error1))
-    print('Erro ao tentar importar bibliotecas necessárias!!')
-    #for i in sys.modules.keys():
-    #    print(i)
-    atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
-    if atua == 's' or atua == 'S':
+import win32api
+from win32api import GetSystemMetrics
+import os, ctypes, sys
+import tkinter
+import PySimpleGUI as psg
+import setuptools
+import string
+import termcolor
+import cx_Oracle
+import pip
+import subprocess
+import time
+from os import system
+from termcolor import colored
+# #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
+def Main():
+    biblio = False
+    while not biblio:
         try:
+            import win32api
+            from win32api import GetSystemMetrics
             import os, ctypes, sys
-            from os import system
+            import tkinter
+            import PySimpleGUI as psg
+            import setuptools
             import string
+            import termcolor
+            import cx_Oracle
             import pip
             import subprocess
             import time
-            for i in biblios:
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
-            print('Instalação efetuada!')
-            import win32api
-            from win32api import GetSystemMetrics
-            import PySimpleGUI as psg
-            import setuptools
-            import cx_Oracle
-            import termcolor
+            from os import system
             from termcolor import colored
-            os.chdir(caminho)
             biblio = True
-        except ImportError as errorimp:
+            caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
+            os.chdir(caminho)
+        except ImportError as error1:
+            from os import system
             system('cls')
-            print("Error: {0}".format(errorimp))
-        except OSError as oserror:
+            print("Error: {0}".format(error1))
+            print('Erro ao tentar importar bibliotecas necessárias!!')
+            #for i in sys.modules.keys():
+            #    print(i)
+            atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
+            if atua == 's' or atua == 'S':
+                try:
+                    import os, ctypes, sys
+                    from os import system
+                    import string
+                    import pip
+                    import subprocess
+                    import time
+                    for i in biblios:
+                        subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
+                    print('Instalação efetuada!')
+                    import win32api
+                    from win32api import GetSystemMetrics
+                    import PySimpleGUI as psg
+                    import setuptools
+                    import cx_Oracle
+                    import termcolor
+                    from termcolor import colored
+                    os.chdir(caminho)
+                    biblio = True
+                except ImportError as errorimp:
+                    system('cls')
+                    print("Error: {0}".format(errorimp))
+                except OSError as oserror:
+                    system('cls')
+                    print("OS error: {0}".format(oserror), sys.exc_info()[0])
+                    if not os.path.exists(caminho):
+                        print('Diretório não encontrado ou não existe\n\n',)
+                        caminho = input('Entre com o caminho do Instant Client: ')
+                        os.chdir(caminho)
+                        #biblio=True
+                        break
+                    else:
+                        os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+                except:
+                    print("Unexpected error:", sys.exc_info()[0])
+                    raise
+            else:
+                print('Bibliotecas não  instaladas!')
+                biblio = False
+                break
+        except OSError as err:
             system('cls')
-            print("OS error: {0}".format(oserror), sys.exc_info()[0])
+            print("OS error: {0}".format(err), sys.exc_info()[0])
             if not os.path.exists(caminho):
                 print('Diretório não encontrado ou não existe\n\n',)
                 caminho = input('Entre com o caminho do Instant Client: ')
                 os.chdir(caminho)
-                biblio=True
+                #biblio=True
             else:
-                os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+                os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-    else:
-        print('Bibliotecas não  instaladas!')
-        biblio = False
-except OSError as err:
-    system('cls')
-    print("OS error: {0}".format(err), sys.exc_info()[0])
-    if not os.path.exists(caminho):
-        print('Diretório não encontrado ou não existe\n\n',)
-        caminho = input('Entre com o caminho do Instant Client: ')
-        os.chdir(caminho)
-        biblio=True
-    else:
-        os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
-except:
-    print("Unexpected error:", sys.exc_info()[0])
-    raise
-
+        else:
+            # Cláusula "else" do "try/except",  só é executada se
+            # não ocorreu nenhum erro
+            break  # Este comando encerra o "while True"
+    programa()
 
 def cadastreAutor (conexao):
     cursor = conexao.cursor()
@@ -442,6 +466,7 @@ def programa():
     saida()            
     #print ("\nOBRIGADO POR USAR ESTE PROGRAMA")
 
+
 # daqui para cima  temos definições de subprogramas
 # daqui para baixo temos o programa
 
@@ -451,14 +476,6 @@ def programa():
     print ("8) LISTAR    os Livros numa faixa de preço") # fazer
     print ("9) LISTAR    os Livros acima de um certo preço") # fazer
 '''
-def Main():
-    if biblio == True:
-        print('Entrou no sistema, OK!')
-        programa()
-    else:
-        print('Decidiu não instalar e saiu!')
-
-
 
 
 Main()
