@@ -8,109 +8,104 @@ global caminho
 atua = ''
 i=0
 #Importando as bibliotecas
-import win32api
-from win32api import GetSystemMetrics
-import os, ctypes, sys
-import tkinter
-import PySimpleGUI as psg
-import setuptools
-import string
-import termcolor
-import cx_Oracle
-import pip
-import subprocess
-import time
-from os import system
-from termcolor import colored
+
 # #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
-def Main():
-    biblio = False
-    while not biblio:
-        try:
-            import win32api
-            from win32api import GetSystemMetrics
-            import os, ctypes, sys
-            import tkinter
-            import PySimpleGUI as psg
-            import setuptools
-            import string
-            import termcolor
-            import cx_Oracle
-            import pip
-            import subprocess
-            import time
-            from os import system
-            from termcolor import colored
-            biblio = True
-            caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
-            os.chdir(caminho)
-        except ImportError as error1:
-            from os import system
-            system('cls')
-            print("Error: {0}".format(error1))
-            print('Erro ao tentar importar bibliotecas necessárias!!')
-            #for i in sys.modules.keys():
-            #    print(i)
-            atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
-            if atua == 's' or atua == 'S':
-                try:
-                    import os, ctypes, sys
-                    from os import system
-                    import string
-                    import pip
-                    import subprocess
-                    import time
-                    for i in biblios:
-                        subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
-                    print('Instalação efetuada!')
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import PySimpleGUI as psg
-                    import setuptools
-                    import cx_Oracle
-                    import termcolor
-                    from termcolor import colored
-                    os.chdir(caminho)
-                    biblio = True
-                except ImportError as errorimp:
-                    system('cls')
-                    print("Error: {0}".format(errorimp))
-                except OSError as oserror:
-                    system('cls')
-                    print("OS error: {0}".format(oserror), sys.exc_info()[0])
-                    if not os.path.exists(caminho):
-                        print('Diretório não encontrado ou não existe\n\n',)
-                        caminho = input('Entre com o caminho do Instant Client: ')
-                        os.chdir(caminho)
-                        #biblio=True
-                        break
-                    else:
-                        os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
-                except:
-                    print("Unexpected error:", sys.exc_info()[0])
-                    raise
-            else:
-                print('Bibliotecas não  instaladas!')
-                biblio = False
-                break
-        except OSError as err:
-            system('cls')
-            print("OS error: {0}".format(err), sys.exc_info()[0])
-            if not os.path.exists(caminho):
-                print('Diretório não encontrado ou não existe\n\n',)
-                caminho = input('Entre com o caminho do Instant Client: ')
+
+biblio = False
+caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
+while not biblio:
+    try:
+        import win32api
+        from win32api import GetSystemMetrics
+        import os, ctypes, sys
+        import tkinter
+        import PySimpleGUI as psg
+        import setuptools
+        import string
+        import termcolor
+        import cx_Oracle
+        import pip
+        import subprocess
+        import time
+        from os import system
+        from termcolor import colored
+        #caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
+        os.chdir(caminho)
+        biblio = True
+    except ImportError as error1:
+        from os import system
+        system('cls')
+        print("Error: {0}".format(error1))
+        print('Erro ao tentar importar bibliotecas necessárias!!')
+        #for i in sys.modules.keys():
+        #    print(i)
+        atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
+        if atua == 's' or atua == 'S':
+            try:
+                import os, ctypes, sys
+                from os import system
+                import string
+                import pip
+                import subprocess
+                import time
+                for i in biblios:
+                    subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
+                print('Instalação efetuada!')
+                import win32api
+                from win32api import GetSystemMetrics
+                import PySimpleGUI as psg
+                import setuptools
+                import cx_Oracle
+                import termcolor
+                from termcolor import colored
                 os.chdir(caminho)
-                #biblio=True
-            else:
-                os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
+                biblio = True
+            except ImportError as errorimp:
+                system('cls')
+                print("Error: {0}".format(errorimp))
+            except OSError as oserror:
+                system('cls')
+                print("OS error: {0}".format(oserror), sys.exc_info()[0])
+                if not os.path.exists(caminho):
+                    print(biblio)
+                    print('Diretório não encontrado ou não existe\n\n',)
+                    caminho = input('Entre com o caminho do Instant Client: ')
+                    os.chdir(caminho)
+                    biblio=True
+                    break
+                else:
+                    os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
         else:
-            # Cláusula "else" do "try/except",  só é executada se
-            # não ocorreu nenhum erro
-            break  # Este comando encerra o "while True"
-    programa()
+            print('Bibliotecas não  instaladas!')
+            biblio = False
+            break
+    except OSError as err:
+        system('cls')
+        print("OS error: {0}".format(err), sys.exc_info()[0])
+        if not os.path.exists(caminho):
+            print('Diretório não encontrado ou não existe\n\n',)
+            caminho = input('Entre com o caminho do Instant Client: ')
+            os.chdir(caminho)
+            #programa()
+            biblio=True
+
+        else:
+            os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+    else:
+        # Cláusula "else" do "try/except",  só é executada se
+        # não ocorreu nenhum erro
+        biblio=True
+        break  # Este comando encerra o "while True"
+
+
+
+
 
 def cadastreAutor (conexao):
     cursor = conexao.cursor()
@@ -219,6 +214,7 @@ def removaLivro (conexao):
         print("Autor removido com sucesso")
       
 def listeLivros (conexao):
+    system('cls')
     cursor=conexao.cursor()
     cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
 
@@ -241,10 +237,67 @@ def listeLivros (conexao):
     #print(aut)
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
-    print('|',end=''),print(' NOME DO LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+    print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
     while linha:
         print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
         linha = cursor.fetchone()    
+
+def listeLivroAte(conexao):
+    system('cls')
+    livro = input('Você gostaria de listar livros até que valor?: ')
+    cursor=conexao.cursor()
+    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco <= " + livro + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
+    linha = cursor.fetchone()
+    if not linha:
+        print ("Não há Livros cadastrados")
+        return
+    liv=0
+    aut=0
+    val=13
+    while linha:
+        #print(linha)
+        #print (len(linha[0]))
+        if len(linha[0]) > liv:
+            liv = len(linha[0])+4
+        if len(linha[1]) > aut:
+            aut = len(linha[1])+4   
+        linha = cursor.fetchone()
+    #print(aut)
+    cursor.scroll(mode="first")
+    linha = cursor.fetchone()
+    print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+    while linha:
+        print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
+        linha = cursor.fetchone()    
+
+def listeLivroEntre(conexao):
+    system('cls')
+    livro = input('Você gostaria de listar livros de que valor?: ')
+    livro1 = input('Até qual valor?: ')
+    cursor=conexao.cursor()
+    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco >= " + livro + " AND Livros.Preco <=" + livro1 + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
+    linha = cursor.fetchone()
+    if not linha:
+        print ("Não há Livros cadastrados")
+        return
+    liv=0
+    aut=0
+    val=13
+    while linha:
+        #print(linha)
+        #print (len(linha[0]))
+        if len(linha[0]) > liv:
+            liv = len(linha[0])+4
+        if len(linha[1]) > aut:
+            aut = len(linha[1])+4   
+        linha = cursor.fetchone()
+    #print(aut)
+    cursor.scroll(mode="first")
+    linha = cursor.fetchone()
+    print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+    while linha:
+        print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
+        linha = cursor.fetchone() 
 
 def cabecalho():
     print ('*'.center(150,'*'))
@@ -302,6 +355,7 @@ def saida():
     print ('*'.center(150,'*'))
     print (colored(' OBRIGADO POR USAR ESTE PROGRAMA '.center(150,'▓'),'red'))
     print ('*'.center(150,'*'))
+    time.sleep(3)
 
 def connection():
     global conexao
@@ -439,19 +493,27 @@ def programa():
                 while not fimdalistagem:
                     tela_listagem()                   
                     try:
-                        opcad = int(input("Digite sua opção: "))
+                        oplist = int(input("Digite sua opção: "))
                     except ValueError:
                         print ("Opção inválida\n")
                     else:
-                        if opcad==1:
+                        if oplist==1:
                             listeAutor (conexao)
                             time.sleep(3)
                             input("Press Enter to continue...")
-                        elif opcad==2:
+                        elif oplist==2:
                             listeLivros (conexao)
                             time.sleep(3)
                             input("Press Enter to continue...")
-                        elif opcad==0:
+                        elif oplist==3:
+                            listeLivroAte (conexao)
+                            time.sleep(3)
+                            input("Press Enter to continue...")
+                        elif oplist==4:
+                            listeLivroEntre (conexao)
+                            time.sleep(3)
+                            input("Press Enter to continue...")
+                        elif oplist==0:
                             fimdalistagem=True
                         else:
                             print ("Opção inválida\n")
@@ -478,6 +540,7 @@ def programa():
     print ("9) LISTAR    os Livros acima de um certo preço") # fazer
 '''
 
-
-Main()
-
+if biblio == True:
+    programa()
+else:
+    print("Resolveu sair")
