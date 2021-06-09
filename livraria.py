@@ -263,8 +263,12 @@ def tela_listagem():
     print ('*'.center(150,'*'))
     print (colored('   LISTAR   '.center(150,'▓',),'blue'))
     print ('*'.center(150,'*'))
-    print ("\n\n1) LISTAR Autor")
-    print ("2) LISTAR Livro")
+    print ("\n\n1) LISTAR    Autor")
+    #print ("2) LISTAR Livro")
+    print ("2) LISTAR    todos os Livros")
+    print ("3) LISTAR    os Livros até certo preço") # fazer
+    print ("4) LISTAR    os Livros numa faixa de preço") # fazer
+    print ("5) LISTAR    os Livros acima de um certo preço") # fazer
     print ("0) RETORNAR\n")
 
 def saida():
