@@ -12,7 +12,7 @@ i=0
 # #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
 
 biblio = False
-caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
+caminho = 'D:\instantclient-basic-windows.x64-19.11.0.0.0dbru\instantclient_19_11'
 while not biblio:
     try:
         import win32api
