@@ -1,4 +1,5 @@
 #coding: utf-8
+#teste
 #Declaração de variáveis globais
 global biblio 
 biblios = ['pip','PySimpleGUI','cx_Oracle','setuptools','termcolor','pywin32']
