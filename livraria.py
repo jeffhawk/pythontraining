@@ -1,49 +1,74 @@
 #coding: utf-8
 #Declaração de variáveis globais
-Arq = "biblios.txt"
-Py = 'PySimpleGUI'
-Oracx = 'cx_Oracle'
 biblio = False
-biblios = ['PySimpleGUI','cx_Oracle','pip','termcolor']
-caminho = 'C:\\Courses1\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6'
+biblios = ['PySimpleGUI','cx_Oracle','pip','setuptools','termcolor','pywin32']
+#caminho = 'C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6'
+caminho = 'D:\instantclient-basic-windows.x64-19.10.0.0.0dbru\instantclient_19_10'
 atua = ''
 i=0
 #Importando as bibliotecas
 # #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las 
 try:
+    import win32api
+    from win32api import GetSystemMetrics
     import os, ctypes, sys
-    import PySimpleGUI as psg   
+    import tkinter
+    import PySimpleGUI as psg
+    import setuptools
     import string
     import termcolor
     import cx_Oracle
     import pip
-    import time
     import subprocess
+    import time
     from os import system
     from termcolor import colored
     biblio = True
-    os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+    os.chdir(caminho)
 except ImportError as error1:
-    print(f"Error: {0}".format(error1))
+    from os import system
+    system('cls')
+    print("Error: {0}".format(error1))
     print('Erro ao tentar importar bibliotecas necessárias!!')
-    for i in sys.modules.keys():
-        print(i)
+    #for i in sys.modules.keys():
+    #    print(i)
     atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
     if atua == 's' or atua == 'S':
-        import os, ctypes, sys
-        import PySimpleGUI as psg   
-        import string
-        import termcolor
-        import cx_Oracle
-        import pip
-        import subprocess
-        from os import system
-        import subprocess
-        from termcolor import colored
-        for i in biblios:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
-        print('Instalação efetuada!')
-        biblio = True
+        try:
+            import os, ctypes, sys
+            from os import system
+            import string
+            import pip
+            import subprocess
+            import time
+            for i in biblios:
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
+            print('Instalação efetuada!')
+            import win32api
+            from win32api import GetSystemMetrics
+            import PySimpleGUI as psg
+            import setuptools
+            import cx_Oracle
+            import termcolor
+            from termcolor import colored
+            os.chdir(caminho)
+            biblio = True
+        except ImportError as errorimp:
+            system('cls')
+            print("Error: {0}".format(errorimp))
+        except OSError as oserror:
+            system('cls')
+            print("OS error: {0}".format(oserror), sys.exc_info()[0])
+            if not os.path.exists(caminho):
+                print('Diretório não encontrado ou não existe\n\n',)
+                caminho = input('Entre com o caminho do Instant Client: ')
+                os.chdir(caminho)
+                biblio=True
+            else:
+                os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
     else:
         print('Bibliotecas não  instaladas!')
         biblio = False
@@ -54,9 +79,11 @@ except OSError as err:
         print('Diretório não encontrado ou não existe\n\n',)
         caminho = input('Entre com o caminho do Instant Client: ')
         os.chdir(caminho)
+        biblio=True
     else:
-        os.chdir("C:\\Courses1\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
+        os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
 except:
+    print("Unexpected error:", sys.exc_info()[0])
     raise
 
 
@@ -75,18 +102,42 @@ def cadastreAutor (conexao):
 def removaAutor (conexao):
     cursor = conexao.cursor()
     nome   = input("\nNome do autor? ")
-
-    cursor.execute("SELECT Id FROM Autores WHERE Nome='"+nome+"'")
-    conexao.commit ()
+    try:
+        cursor.execute("SELECT Id FROM Autores WHERE Nome='"+nome+"'")
+        conexao.commit ()
+        linha = cursor.fetchone()
+        if not linha:
+            print("Autor inexistente")
+        else:
+            cursor.execute("DELETE FROM Autores WHERE Nome='"+nome+"'")
+            conexao.commit ()
+            print("Autor removido com sucesso")
+    except cx_Oracle.DatabaseError as err:
+        print("DataBase error: {0}".format(err), sys.exc_info()[0])
+        print('O autor tem livros cadastrados, favor remover os livros primeiro!')
+    
+def listeAutor (conexao):
+    cursor=conexao.cursor()
+    cursor.execute("SELECT * FROM Autores")
 
     linha = cursor.fetchone()
     if not linha:
-        print("Autor inexistente")
-    else:
-        cursor.execute("DELETE FROM Autores WHERE Nome='"+nome+"'")
-        conexao.commit ()
-        print("Autor removido com sucesso")
-    
+        print ("Não há Autores cadastrados")
+        return
+    aut=0
+    while linha:
+        #print(linha)
+        #print (len(linha[0]))
+        if len(linha[1]) > aut:
+            aut = len(linha[1])+4
+        linha = cursor.fetchone()
+    #print(aut)
+    cursor.scroll(mode="first")
+    linha = cursor.fetchone()
+    print('|',end=''),print(' AUTOR '.center(aut,'*'),end=''), print('|')
+    while linha:
+        print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
+        linha = cursor.fetchone()
 
 def cadastreLivro (conexao):
     cursor    = conexao.cursor()
@@ -119,8 +170,7 @@ def cadastreLivro (conexao):
                 cursor.execute("INSERT INTO Autorias (Id,Codigo) VALUES ("+str(idAutor)+","+str(CodigoLivro)+")")
                 conexao.commit ()
                 print("Livro cadastrado com sucesso")
-
-                
+               
 def removaLivro (conexao):
     cursor = conexao.cursor()
     nome = input("\nNome do livro? ")
@@ -142,8 +192,7 @@ def removaLivro (conexao):
         conexao.commit ()
         
         print("Autor removido com sucesso")
-    
-    
+      
 def listeLivros (conexao):
     cursor=conexao.cursor()
     cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
@@ -152,41 +201,84 @@ def listeLivros (conexao):
     if not linha:
         print ("Não há livros cadastrados")
         return
-        
+   
+    liv=0
+    aut=0
+    val=13
     while linha:
-        print (linha[0]+" "+linha[1]+" "+str(linha[2]))
+        #print(linha)
+        #print (len(linha[0]))
+        if len(linha[0]) > liv:
+            liv = len(linha[0])+4
+        if len(linha[1]) > aut:
+            aut = len(linha[1])+4   
+        linha = cursor.fetchone()
+    #print(aut)
+    cursor.scroll(mode="first")
+    linha = cursor.fetchone()
+    print('|',end=''),print(' NOME DO LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+    while linha:
+        print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
         linha = cursor.fetchone()    
 
 def cabecalho():
-    print ('*'.center(180,'*'))
-    print (colored('   PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES   '.center(180,'▓'),'red'))
-    print ('*'.center(180,'*'))
+    print ('*'.center(150,'*'))
+    print (colored('   PROGRAMA PARA CADASTRAR LIVROS E SEUS AUTORES   '.center(150,'▓'),'red'))
+    print ('*'.center(150,'*'))
 
 def tela_prin():
     system('cls')
     cabecalho()
     print ('\n\nMENU---------> Opção:')
     print (''.center(23,'-'))
-    print ("CADASTROS---->      1")
-    print ("REMOÇÃO------>      2")
-    print ("LISTAGEM----->      3") # fazer
-    print ("TERMINAR----->      0\n")
+    print ("CADASTROS---->       1")
+    print ("REMOÇÃO------>       2")
+    print ("LISTAGEM----->       3") # fazer
+    print ("TERMINAR----->       0\n")
     #print (f'Teste'.format('\033[1;34m'))
 
 def tela_cadastro():
     system('cls')
     cabecalho()
-    print ('*'.center(180,'*'))
-    print (colored('   CADASTROS   '.center(180,'▓',),'blue'))
-    print ('*'.center(180,'*'))
+    print ('*'.center(150,'*'))
+    print (colored('   CADASTRAR   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+    print ("\n\n1) CADASTRAR Autor")
+    print ("2) CADASTRAR Livro")
+    print ("0) RETORNAR\n")
 
-def programa():
-    print ("PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES")
-	
+def tela_remocao():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   REMOÇÃO   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+    print ("\n\n1) REMOVER Autor")
+    print ("2) REMOVER Livro")
+    print ("0) RETORNAR\n")
+
+def tela_listagem():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   LISTAR   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+    print ("\n\n1) LISTAR Autor")
+    print ("2) LISTAR Livro")
+    print ("0) RETORNAR\n")
+
+def saida():
+    system('cls')
+    print ('\n\n\n')
+    print ('*'.center(150,'*'))
+    print (colored(' OBRIGADO POR USAR ESTE PROGRAMA '.center(150,'▓'),'red'))
+    print ('*'.center(150,'*'))
+
+def connection():
+    global conexao
     servidor = 'localhost/xe'
     usuario  = 'system'
     senha    = 'oracle'
-
     try:
         conexao = cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
         cursor  = conexao.cursor()
@@ -254,6 +346,9 @@ def programa():
     except cx_Oracle.DatabaseError:
         pass # ignora, pois a tabela já existe
 
+def programa():
+    #print ("PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES")
+    connection()
     fimDoPrograma=False
     fimdocadastro=False
     fimdaremocao=False
@@ -262,19 +357,16 @@ def programa():
     while not fimDoPrograma:
         tela_prin()    
         try:
-            opcao = int(input("Digite sua opção: "));
+            opcao = int(input("Digite sua opção:    "));
         except ValueError:
             print ("Opção inválida\n")
         else:
             # renumerar opções abaixo e usar até 4 novos subprogramas
             # procurar economizar nessa quantidade acima de subprogramas
             if opcao==1:
+                fimdocadastro=False
                 while not fimdocadastro:
-                    tela_cadastro()
-                    print ("\n\n1) CADASTRAR Autor")
-                    print ("2) CADASTRAR Livro")
-                    print ("0) RETORNAR\n")
-                   
+                    tela_cadastro()                   
                     try:
                         opcad = int(input("Digite sua opção: "))
                     except ValueError:
@@ -284,7 +376,8 @@ def programa():
                             cadastreAutor (conexao)
                             time.sleep(3)
                         elif opcad==2:
-                            removaAutor (conexao)
+                            cadastreLivro (conexao)
+                            time.sleep(3)
                         elif opcad==0:
                             fimdocadastro=True
                         else:
@@ -292,9 +385,47 @@ def programa():
                         
                     #cadastreAutor (conexao)
             elif opcao==2:
-                removaAutor (conexao)
+                fimdaremocao=False
+                while not fimdaremocao:
+                    tela_remocao()                   
+                    try:
+                        opcad = int(input("Digite sua opção: "))
+                    except ValueError:
+                        print ("Opção inválida\n")
+                    else:
+                        if opcad==1:
+                            removaAutor (conexao)
+                            win32api.Beep(500, 3000)
+                            time.sleep(3)
+                        elif opcad==2:
+                            removaLivro (conexao)
+                            time.sleep(3)
+                        elif opcad==0:
+                            fimdaremocao=True
+                        else:
+                            print ("Opção inválida\n")
+                
             elif opcao==3:
-                cadastreLivro (conexao)
+                fimdalistagem=False
+                while not fimdalistagem:
+                    tela_listagem()                   
+                    try:
+                        opcad = int(input("Digite sua opção: "))
+                    except ValueError:
+                        print ("Opção inválida\n")
+                    else:
+                        if opcad==1:
+                            listeAutor (conexao)
+                            time.sleep(3)
+                            input("Press Enter to continue...")
+                        elif opcad==2:
+                            listeLivros (conexao)
+                            time.sleep(3)
+                            input("Press Enter to continue...")
+                        elif opcad==0:
+                            fimdalistagem=True
+                        else:
+                            print ("Opção inválida\n")
             elif opcao==4:
                 removaLivro (conexao)
             elif opcao==5:
@@ -303,8 +434,9 @@ def programa():
                 fimDoPrograma=True
             else:
                 print ("Opção inválida\n")
-                
-    print ("\nOBRIGADO POR USAR ESTE PROGRAMA")
+
+    saida()            
+    #print ("\nOBRIGADO POR USAR ESTE PROGRAMA")
 
 # daqui para cima  temos definições de subprogramas
 # daqui para baixo temos o programa
@@ -321,7 +453,6 @@ def Main():
         programa()
     else:
         print('Decidiu não instalar e saiu!')
-
 
 
 
