@@ -1,20 +1,32 @@
 #coding: utf-8
-#teste
-#Declaração de variáveis globais
-global biblio 
-biblios = ['pip','PySimpleGUI','cx_Oracle','setuptools','termcolor','pywin32']
-#caminho = 'C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6'
+'''PROJETO DE SALA DE AULA - SISTEMA DE LIVRARIA
+Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de nota na matéria de APPC
+no curso de SISTEMAS DE INFORMAÇÃO, sob a supervisão do Ilmo. Prof. André de Carvalho
+
+JEFFERSON EDUARDO LUIZ
+RA 19568823
+
+Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendidas de forma autônoma ao curso.
+Também foi utilizado o GUI(Graphical User Interface) Tkinter para desenvolvimento do programa
+
+'''
+
+# Declaração de variáveis globais
+from os import strerror
+
+
+global biblio
 global caminho
+biblios = ['pip','PySimpleGUI','cx_Oracle','setuptools','termcolor','pywin32']
 atua = ''
 i=0
-#Importando as bibliotecas
 
-# #Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
-
-biblio = False
+# Importando as bibliotecas
+# Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
+biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
 caminho = 'D:\instantclient-basic-windows.x64-19.11.0.0.0dbru\instantclient_19_11'
-while not biblio:
-    try:
+while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
+    try: #Inicia as importações
         import win32api
         from win32api import GetSystemMetrics
         import os, ctypes, sys
@@ -29,16 +41,13 @@ while not biblio:
         import time
         from os import system
         from termcolor import colored
-        #caminho = 'C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6'
-        os.chdir(caminho)
+        os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca "os" para setar o caminho do instantclient
         biblio = True
     except ImportError as error1:
         from os import system
         system('cls')
         print("Error: {0}".format(error1))
         print('Erro ao tentar importar bibliotecas necessárias!!')
-        #for i in sys.modules.keys():
-        #    print(i)
         atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
         if atua == 's' or atua == 'S':
             try:
@@ -60,6 +69,7 @@ while not biblio:
                 from termcolor import colored
                 os.chdir(caminho)
                 biblio = True
+                break
             except ImportError as errorimp:
                 system('cls')
                 print("Error: {0}".format(errorimp))
@@ -104,9 +114,6 @@ while not biblio:
         break  # Este comando encerra o "while True"
 
 
-
-
-
 def cadastreAutor (conexao):
     cursor = conexao.cursor()
     nome   = input("\nNome do autor? ")
@@ -133,14 +140,14 @@ def removaAutor (conexao):
             conexao.commit ()
             print("Autor removido com sucesso")
     except cx_Oracle.DatabaseError as err:
-        print("DataBase error: {0}".format(err), sys.exc_info()[0])
+        #print("DataBase error: {0}".format(err), sys.exc_info()[0])
         print('O autor tem livros cadastrados, favor remover os livros primeiro!')
     
 def listeAutor (conexao):
     cursor=conexao.cursor()
-    cursor.execute("SELECT * FROM Autores")
+    cursor.execute("SELECT * FROM Autores ORDER BY Autores.Nome")
 
-    linha = cursor.fetchone()
+    linha = cursor.fetchone() # linha(1,'Arthur')
     if not linha:
         print ("Não há Autores cadastrados")
         return
@@ -149,9 +156,10 @@ def listeAutor (conexao):
         #print(linha)
         #print (len(linha[0]))
         if len(linha[1]) > aut:
-            aut = len(linha[1])+4
+            aut = len(linha[1])
         linha = cursor.fetchone()
     #print(aut)
+    aut = aut + 2
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
     print('|',end=''),print(' AUTOR '.center(aut,'*'),end=''), print('|')
@@ -214,9 +222,8 @@ def removaLivro (conexao):
         print("Autor removido com sucesso")
       
 def listeLivros (conexao):
-    system('cls')
     cursor=conexao.cursor()
-    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
+    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Nome")
 
     linha = cursor.fetchone()
     if not linha:
@@ -225,16 +232,18 @@ def listeLivros (conexao):
    
     liv=0
     aut=0
-    val=13
+    val=8
     while linha:
         #print(linha)
         #print (len(linha[0]))
         if len(linha[0]) > liv:
-            liv = len(linha[0])+4
+            liv = len(linha[0])
         if len(linha[1]) > aut:
-            aut = len(linha[1])+4   
+            aut = len(linha[1])   
         linha = cursor.fetchone()
     #print(aut)
+    liv = liv + 2
+    aut = aut + 2
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
     print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
@@ -243,26 +252,27 @@ def listeLivros (conexao):
         linha = cursor.fetchone()    
 
 def listeLivroAte(conexao):
-    system('cls')
     livro = input('Você gostaria de listar livros até que valor?: ')
     cursor=conexao.cursor()
-    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco <= " + livro + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
+    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco <= " + livro + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Preco")
     linha = cursor.fetchone()
     if not linha:
         print ("Não há Livros cadastrados")
         return
     liv=0
     aut=0
-    val=13
+    val=8
     while linha:
         #print(linha)
         #print (len(linha[0]))
         if len(linha[0]) > liv:
-            liv = len(linha[0])+4
+            liv = len(linha[0])
         if len(linha[1]) > aut:
-            aut = len(linha[1])+4   
+            aut = len(linha[1])   
         linha = cursor.fetchone()
     #print(aut)
+    liv = liv + 2
+    aut = aut + 2
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
     print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
@@ -271,33 +281,72 @@ def listeLivroAte(conexao):
         linha = cursor.fetchone()    
 
 def listeLivroEntre(conexao):
-    system('cls')
-    livro = input('Você gostaria de listar livros de que valor?: ')
-    livro1 = input('Até qual valor?: ')
+    while True:
+        try:
+            livro = input('Você gostaria de listar livros de que valor?: ')
+            livro1 = input('Até qual valor?: ')
+            if not(livro or livro1):
+                print('Digite um valor')
+                return
+            cursor=conexao.cursor()
+            cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco >= " + livro + " AND Livros.Preco <=" + livro1 + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Nome")
+            linha = cursor.fetchone()
+            if not linha:
+                print ("Não há Livros cadastrados")
+                return
+            liv=0
+            aut=0
+            val=8
+            while linha:
+                #print(linha)
+                #print (len(linha[0]))
+                if len(linha[0]) > liv:
+                    liv = len(linha[0])
+                if len(linha[1]) > aut:
+                    aut = len(linha[1])   
+                linha = cursor.fetchone()
+            #print(aut)
+            liv = liv + 2
+            aut = aut + 2
+            cursor.scroll(mode="first")
+            linha = cursor.fetchone()
+            print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+            while linha:
+                print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
+                linha = cursor.fetchone()
+            return
+        except ValueError:
+            print('Você deve digitar um valor')
+            return
+            
+def listeLivroApartir(conexao):
+    livro = input('Você gostaria de listar livros a partir de qual valor?: ')
     cursor=conexao.cursor()
-    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco >= " + livro + " AND Livros.Preco <=" + livro1 + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id")
+    cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco >= " + livro + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Preco")
     linha = cursor.fetchone()
     if not linha:
         print ("Não há Livros cadastrados")
         return
     liv=0
     aut=0
-    val=13
+    val=8
     while linha:
         #print(linha)
         #print (len(linha[0]))
         if len(linha[0]) > liv:
-            liv = len(linha[0])+4
+            liv = len(linha[0])
         if len(linha[1]) > aut:
-            aut = len(linha[1])+4   
+            aut = len(linha[1])   
         linha = cursor.fetchone()
     #print(aut)
+    liv = liv + 2
+    aut = aut + 2
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
     print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
     while linha:
         print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
-        linha = cursor.fetchone() 
+        linha = cursor.fetchone()
 
 def cabecalho():
     print ('*'.center(150,'*'))
@@ -319,11 +368,25 @@ def tela_cadastro():
     system('cls')
     cabecalho()
     print ('*'.center(150,'*'))
-    print (colored('   CADASTRAR   '.center(150,'▓',),'blue'))
+    print (colored('   CADASTRO   '.center(150,'▓',),'blue'))
     print ('*'.center(150,'*'))
     print ("\n\n1) CADASTRAR Autor")
     print ("2) CADASTRAR Livro")
     print ("0) RETORNAR\n")
+
+def tela_cadAutor():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   CADASTRAR Autor   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+
+def tela_cadLivro():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   CADASTRAR Livro   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
 
 def tela_remocao():
     system('cls')
@@ -334,6 +397,20 @@ def tela_remocao():
     print ("\n\n1) REMOVER Autor")
     print ("2) REMOVER Livro")
     print ("0) RETORNAR\n")
+
+def tela_remAutor():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   REMOVER Autor   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+
+def tela_remLivro():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   REMOVER Livro   '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
 
 def tela_listagem():
     system('cls')
@@ -348,6 +425,20 @@ def tela_listagem():
     print ("4) LISTAR    os Livros numa faixa de preço") # fazer
     print ("5) LISTAR    os Livros acima de um certo preço") # fazer
     print ("0) RETORNAR\n")
+
+def tela_listAutor():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   LISTAR Autor  '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
+
+def tela_listLivros():
+    system('cls')
+    cabecalho()
+    print ('*'.center(150,'*'))
+    print (colored('   LISTAR Livros  '.center(150,'▓',),'blue'))
+    print ('*'.center(150,'*'))
 
 def saida():
     system('cls')
@@ -456,11 +547,15 @@ def programa():
                         print ("Opção inválida\n")
                     else:
                         if opcad==1:
+                            tela_cadAutor()
                             cadastreAutor (conexao)
-                            time.sleep(3)
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif opcad==2:
+                            tela_cadLivro()
                             cadastreLivro (conexao)
-                            time.sleep(3)
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif opcad==0:
                             fimdocadastro=True
                         else:
@@ -477,12 +572,16 @@ def programa():
                         print ("Opção inválida\n")
                     else:
                         if opcad==1:
+                            tela_remAutor()
                             removaAutor (conexao)
                             win32api.Beep(500, 3000)
-                            time.sleep(3)
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif opcad==2:
+                            tela_remLivro()
                             removaLivro (conexao)
-                            time.sleep(3)
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif opcad==0:
                             fimdaremocao=True
                         else:
@@ -498,21 +597,30 @@ def programa():
                         print ("Opção inválida\n")
                     else:
                         if oplist==1:
+                            tela_listAutor()
                             listeAutor (conexao)
-                            time.sleep(3)
-                            input("Press Enter to continue...")
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif oplist==2:
+                            tela_listLivros()
                             listeLivros (conexao)
-                            time.sleep(3)
-                            input("Press Enter to continue...")
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif oplist==3:
+                            tela_listLivros()
                             listeLivroAte (conexao)
-                            time.sleep(3)
-                            input("Press Enter to continue...")
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif oplist==4:
+                            tela_listLivros()
                             listeLivroEntre (conexao)
-                            time.sleep(3)
-                            input("Press Enter to continue...")
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
+                        elif oplist==5:
+                            tela_listLivros()
+                            listeLivroApartir (conexao)
+                            #time.sleep(2)
+                            input("\n\nPress Enter to continue...")
                         elif oplist==0:
                             fimdalistagem=True
                         else:
