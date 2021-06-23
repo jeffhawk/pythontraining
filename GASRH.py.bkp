@@ -12,6 +12,7 @@ Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas 
 #==========================
 #Importando Bibliotecas internas do Python
 from tkinter import *
+from tkinter.ttk import *
 import tkinter
 from tkinter import font
 from tkinter import messagebox
@@ -94,14 +95,13 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                     import setuptools
                     import cx_Oracle
                     import inspect
-                    #Tk.destroy()
+                    Tk.destroy()
                     #os.chdir('C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6')
             except:
                 messagebox.showerror('Erro','Unexpected error:')
                 raise
         else:
             messagebox.showerror('Erro', 'Bibliotecas não  instaladas!')
-            atualiza = 0
             biblio = False
             break
     except OSError as err:
@@ -128,7 +128,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
         import inspect
         biblio=True
         break  # Este comando encerra o 'while True'
-if biblio == FALSE or atua == YES:
+if biblio == FALSE:
     system('python gasrh.py')
 
 
@@ -434,7 +434,7 @@ class Bd:
             elif error.code == 955:
                 pass
         if entra == 1:
-           #Login_Tela.destroy()
+            Login_Tela.destroy()
             Telas_Sys.programa()
 
 
@@ -483,7 +483,7 @@ class Bd:
                 txt_Senha_User.delete(0, END)
                 return
             elif op == NO:
-                #a.Tela_Cad_User.destroy()
+                a.Tela_Cad_User.destroy()
                 txt_Id_Usuario.delete(0,END)
                 txt_Pass.delete(0,END)
                 txt_Id_Usuario.focus()
@@ -707,7 +707,7 @@ class Bd:
                 txt_Nome_Func.focus()
                 return
             elif op == NO:
-                #Tela_Cadastro_Func.destroy()
+                Tela_Cadastro_Func.destroy()
                 pass
         
         
@@ -901,32 +901,32 @@ class Bd:
             pass # ignora, pois a tabela já existe
 
 
-class Telas_Sys():
+class Telas_Sys:
     Splash_Screen = Tk()
     #Tela_Cadastro_Func = lambda: Tk()
 
     
-    def tela_splash(self):
+    def tela_splash():
         #global Splash_Screen
         Bd.conn()
         Bd.connection()
         #Tela de apresentação
-        self.Splash_Screen = Tk()
-        Telas_Sys.centralizar_window(self.Splash_Screen)
+        Splash_Screen = Tk()
+        Telas_Sys.centralizar_window(Splash_Screen)
         #splash_Screen.eval('tk::PlaceWindow . center')
         #Definindo o tamanho 
         #splash_Screen.geometry('250x100')
         #Removendo as bordas
-        self.Splash_Screen.overrideredirect(True)
-        self.Splash_Screen.config()
-        Label1 = Label(self.Splash_Screen, text='Bem vindo ao Gute Arbeit', fg='blue', font=fonte_Titulo).pack()
+        Splash_Screen.overrideredirect(True)
+        Splash_Screen.config()
+        Label1 = Label(Splash_Screen, text='Bem vindo ao Gute Arbeit', fg='blue', font=fonte_Titulo).pack()
         #TesteImage1(splash_Screen)
         imagem = PhotoImage(file= sys.path[0] + '\images\GA1.png')
         #img = imagem.subsample(1,1)
-        w = Label(self.Splash_Screen, image=imagem)
+        w = Label(Splash_Screen, image=imagem)
         w.imagem = imagem
         w.pack()
-        
+        Splash_Screen.after(2000, Telas_Sys.tela_login)
         #Label2 = Label(splash_Screen, text='Carregando bibliotecas necessárias...', fg= "green", font=fonte_Normal).pack(side=BOTTOM)
 
     #Tela de login
@@ -1323,17 +1323,15 @@ def getval():
 #Função Sair  
 def _quit():  
    Janela.quit()  
-   #Janela.destroy()  
+   Janela.destroy()  
    exit()  
 
-def teste():
-    pass
-    
 
 
-T = Telas_Sys()
-T.tela_splash()
-T.Splash_Screen.after(2000, T.tela_login())
+
+Telas_Sys.tela_splash()
+
+#Telas_Sys. Splash_Screen.after(2000, Telas_Sys.tela_login(Telas_Sys))
 
 
 mainloop()
