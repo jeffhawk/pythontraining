@@ -12,7 +12,7 @@ class Application(Frame):
 app = Application()
 
 mainloop()
-
+'''
 import tkinter as tk
 
 class Application(tk.Frame):
@@ -41,7 +41,7 @@ app = Application(master=root)
 app.mainloop()
 print(__name__)
 
-from tkinter import Tk, Label, Button, StringVar
+'''from tkinter import Tk, Label, Button, StringVar
 
 class MyFirstGUI:
     LABEL_TEXT = [

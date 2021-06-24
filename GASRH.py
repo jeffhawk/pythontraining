@@ -1,4 +1,4 @@
-#==========================
+#############################################################################
 '''PROJETO FINAL - SISTEMA DE RH - "Gute Arbeit Sistema de RH"
 Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de nota final na PONTIFÍCIA UNIVERSIDADE CATÓLICA DE CAMPINAS - PUC-CAMPINAS,
 no CENTRO DE CIÊNCIAS EXATAS, AMBIENTAIS E DE TECNOLOGIA para o curso de SISTEMAS DE INFORMAÇÃO.
@@ -9,36 +9,34 @@ RA 19568823
 Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendida de forma autônoma ao curso.
 
 '''
-#==========================
+#############################################################################
+
 #Importando Bibliotecas internas do Python
 from tkinter import *
-import tkinter
+import tkinter as Tk
 from tkinter import font
 from tkinter import messagebox
 from tkinter import Entry
 from tkinter import ttk
+import tkinter
 from tkinter.font import BOLD
 from tkinter.simpledialog import askstring
 import sys
 import os
-import ctypes
 from os import system
 import inspect
 from functools import partial
 import string
 import subprocess
 import time
-import inspect
+import cx_Oracle
 
-#Declaração de variáveis globais - Estou ainda verificando a real necessidade, pois estou querendo trabalhar com POO
-global biblio
-global caminho
-global tentativa
-
+#============================================================================
+#Declaração de variáveis globais - Estou ainda verificando a real 
+# necessidade,  pois estou querendo trabalhar com POO
 biblios = ['pip','cx_Oracle','setuptools','pywin32']
-atua = ''
-i=0
-biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
+biblio = False #variável de controle para saber se está tudo ok e seguir com 
+               #a execução
 #caminho = 'InstantClient'
 fonte_Normal = ("Verdana", "8",'bold')
 fonte_Titulo = ('Arial', 16, 'bold')
@@ -46,18 +44,35 @@ fonte_Texto = ('Times New Roman', 12)
 caminho = 'InstantClient'
 tentativa = 0
 
-
-while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
+#============================================================================
+while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na 
+                  #verificação tem a opção da instalação das Bibliotecas
     try:
+        #Resolvi o problema da janela fantasma aparecendo quando entrava no
+        # loop e perguntava se queria instalar as biblios, era uma instancia
+        # do Tkinter que ficava aberta, eu nome-ei e instanciei ela para 
+        # poder usar um destroy depois.        
+        Phantom = Tk.Tk()
+        Phantom.withdraw()
+
+        #====================================================================
         # Importando as bibliotecas
-        # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
+        # Verifica se existe as bibliotecas, caso contrário pergunta se quer 
+        # instala-las
         import cx_Oracle
-        import win32api
-        from win32api import GetSystemMetrics
+        import win32
+        from win32 import *
         import setuptools
         import pip
-        os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca 'os' para setar o caminho do instantclient
-        biblio = True
+
+        #====================================================================
+        #Aqui estou usando a funcionalidade da biblioteca
+        #'os' para setar o caminho do instantclient
+        os.chdir(caminho)
+        #Tudo saindo OK ele atualiza a instancia fantasma e destroy
+        Phantom.update()
+        Phantom.destroy()
+        biblio = True #Aqui sai do laço
     except ImportError as error1:
         from os import system
         messagebox.showerror('Erro Bibliotecas','Error: ' + str(error1))
@@ -70,40 +85,16 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                 for i in biblios:
                     subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
                 messagebox.showinfo('Bibliotecas','Instalação concluída!')
-                break                
             except ImportError as errorimp:
                 messagebox.showerror('Erro Bibliotecas','Error: '+ str(errorimp))
-                break
-            except OSError as oserror:
-                messagebox.showerror('Erro OS', 'OS error: ' + str(oserror))
-                if not os.path.exists(caminho):
-                    #messagebox.showinfo(biblio)
-                    messagebox.showerror('OS Erro','Diretório não encontrado ou não existe',)
-                    caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
-                    #os.chdir(caminho)
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import setuptools
-                    import cx_Oracle
-                    import inspect
-                    biblio=True
-                    break
-                else:
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import setuptools
-                    import cx_Oracle
-                    import inspect
-                    #Tk.destroy()
-                    #os.chdir('C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6')
+                exit()
             except:
                 messagebox.showerror('Erro','Unexpected error:')
                 raise
         else:
-            messagebox.showerror('Erro', 'Bibliotecas não  instaladas!')
-            atualiza = 0
+            messagebox.showerror('Erro', 'Bibliotecas não instaladas, Saindo...!')
             biblio = False
-            break
+            quit()
     except OSError as err:
         messagebox.showerror('Erro OS', 'OS error: ' + str(err))
         if not os.path.exists(caminho):
@@ -111,26 +102,30 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
             caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
             os.chdir(caminho)
             #programa()
-            biblio=True
-            break
-        #else:
-        #    os.chdir('C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6')  
+            Phantom.update()
+            Phantom.destroy()
+            biblio=True 
     except:
         messagebox.showerror('Error', 'Unexpected error:')
         raise
     else:
         # Cláusula 'else' do 'try/except',  só é executada se
         # não ocorreu nenhum erro
-        import win32api
-        from win32api import GetSystemMetrics
         import setuptools
         import cx_Oracle
         import inspect
-        biblio=True
-        break  # Este comando encerra o 'while True'
-if biblio == FALSE or atua == YES:
-    system('python gasrh.py')
+        biblio=True     # Este comando encerra o 'while True'
 
+#============================================================================
+def centralizar_window(window):
+        windowWidth =  window.winfo_reqwidth()
+        windowHeight = window.winfo_reqheight()
+        #messagebox.showinfo('Teste', 'Width' + str(windowWidth) + 'Height' + str(windowHeight))
+        # Gets both half the screen width/height and window width/height
+        positionRight = int(window.winfo_screenwidth()/2 - windowWidth/1.5)
+        positionDown = int(window.winfo_screenheight()/2 - windowHeight/3.5)
+        # Positions the window in the center of the page.
+        window.geometry("+{}+{}".format(positionRight, positionDown))
 
 class Bd:
     tentativa = 0
@@ -382,13 +377,11 @@ class Bd:
 
     def logar(self, user, password):
         try:
-            user1 = user.get()
-            pass1 = password.get()
+            user1 = user
+            pass1 = password
             entra = 0
-            #Bd.conn()
-            cursor = Bd.conexao.cursor()
-            
-            
+            Bd.conn()
+            cursor = self.conexao.cursor()
             if not user1:
                 messagebox.showinfo('Alerta','Você deve inserir um nome para Logar, não pode ser em branco!')
                 Bd.tentativa += 1
@@ -900,19 +893,14 @@ class Bd:
         else:
             pass # ignora, pois a tabela já existe
 
+#Tela de apresentação
+class Splash:
 
-class Telas_Sys():
-    Splash_Screen = Tk()
-    #Tela_Cadastro_Func = lambda: Tk()
-
-    
-    def tela_splash(self):
+    def __init__(self) -> None:
         #global Splash_Screen
         Bd.conn()
-        Bd.connection()
-        #Tela de apresentação
-        self.Splash_Screen = Tk()
-        Telas_Sys.centralizar_window(self.Splash_Screen)
+        self.Splash_Screen = tkinter.Tk()
+        centralizar_window(self.Splash_Screen)
         #splash_Screen.eval('tk::PlaceWindow . center')
         #Definindo o tamanho 
         #splash_Screen.geometry('250x100')
@@ -926,21 +914,27 @@ class Telas_Sys():
         w = Label(self.Splash_Screen, image=imagem)
         w.imagem = imagem
         w.pack()
-        
-        #Label2 = Label(splash_Screen, text='Carregando bibliotecas necessárias...', fg= "green", font=fonte_Normal).pack(side=BOTTOM)
+        self.Splash_Screen.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    #Tela de login
-    def tela_login(self):
+    def on_closing(self):
+        #if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        self.Splash_Screen.destroy()
+        #Programa_Prin.tela_login()
+
+#Tela de login
+class Login:
+    def __init__(self) -> None:
+        #def tela_login(self):
         #global txt_Id_Usuario, txt_Pass, Login_Tela
         #Fecha a janela de splash
-        if Bd.tentativa <= 3:
-            Telas_Sys.Splash_Screen.destroy()
-        
-
+        SP.Splash_Screen.destroy()
+        #if Bd.tentativa <= 3:
+        Bd.conn()
+        Bd.connection()
         #Criando a tela de login
-        Login_Tela = Tk()
+        Login_Tela = tkinter.Tk()
         #login_Tela.geometry('400x150')
-        Telas_Sys.centralizar_window(Login_Tela)
+        centralizar_window(Login_Tela)
         Login_Tela.title('Login')
         #login_Tela.eval('tk::PlaceWindow . center')
         #login_Tela.iconbitmap('./images/GA4.png')
@@ -958,13 +952,13 @@ class Telas_Sys():
         
         lbl_User = Label(Frame_Dados_Login, text='Usuário:', font=fonte_Normal, width=10, fg='blue')
         lbl_User.grid(row=0)
-        self.txt_Id_Usuario = Entry(Frame_Dados_Login, width=20, font=fonte_Texto)
-        self.txt_Id_Usuario.grid(row=0, column=1)
-        self.txt_Id_Usuario.focus()
+        txt_Id_Usuario = Entry(Frame_Dados_Login, width=20, font=fonte_Texto)
+        txt_Id_Usuario.grid(row=0, column=1)
+        txt_Id_Usuario.focus()
         label_Pass = Label(Frame_Dados_Login, text='Senha:', font=fonte_Normal, width=10, fg='blue')
         label_Pass.grid(row=1)
-        self.txt_Pass = Entry(Frame_Dados_Login, width=20, font=fonte_Texto, show='*')
-        self.txt_Pass.grid(row=1, column=1)
+        txt_Pass = Entry(Frame_Dados_Login, width=20, font=fonte_Texto, show='*')
+        txt_Pass.grid(row=1, column=1)
         
 
         #Criando o frame dos botões
@@ -973,7 +967,7 @@ class Telas_Sys():
         img_Sair = img_Sair.subsample(3,3)
         img_log = PhotoImage(file= sys.path[0] + './images/user1.png')
         img_log = img_log.subsample(3,3)
-        btn_Entrar=Button(Frame_Btn, text='Login', fg='blue', width=55, height=25, command=lambda: Bd.logar(Bd, self.txt_Id_Usuario, self.txt_Pass), image=img_log, compound=LEFT, font=fonte_Normal)
+        btn_Entrar=Button(Frame_Btn, text='Login', fg='blue', width=55, height=25, command=lambda: Bd.logar(Bd, txt_Id_Usuario.get(), txt_Pass.get()), image=img_log, compound=LEFT, font=fonte_Normal)
         #btn_Entrar.bind('<Button-1>', logar)
         btn_Entrar.imagem = img_log
         btn_Entrar.pack(side=LEFT)
@@ -986,29 +980,100 @@ class Telas_Sys():
 
 
 
-        #login_Tela.mainloop()
+        Login_Tela.mainloop()
+
+
+
+class Programa_Prin(object):
+    #Tela_Cadastro_Func = lambda: Tk()
+
+    def __init__(self, parent) -> None:
+        #def tela_principal(self):
+        Bd.connection()   
+        #Criação e Janela propriamente dita, definindo o objeto.
+        self.Janela = parent
+        self.Janela.title('Gute Arbeit Sistema de RH')
+        centralizar_window(self.Janela)
+        self.Janela.geometry('660x480+400+150')
+        #--- Criando o Menu
+        MenuBar = Menu(self.Janela)
+        self.Janela.config(menu=MenuBar)
+        
+        #---
+        #Menu Arquivo  
+        Menu_Arq= Menu(MenuBar, tearoff=0)  
+        #Menu_Arq.add_command(label="New")  
+        #Menu_Arq.add_separator()  
+        Menu_Arq.add_command(label="Sair", command=self._quit)  
+        MenuBar.add_cascade(label="Arquivo", menu=Menu_Arq)
+        #Menu Cadastro  
+        Menu_Cad= Menu(MenuBar, tearoff=0)  
+        Menu_Cad.add_command(label="Funcionário", command=self.tela_cad_func)
+        Menu_Cad.add_separator()  
+        Menu_Cad.add_command(label="Usuário Sistema", command=self.tela_cad_user)  
+        MenuBar.add_cascade(label="Cadastrar", menu=Menu_Cad)
+        #Menu Listagem  
+        Menu_Lis= Menu(MenuBar, tearoff=0)  
+        Menu_Lis.add_command(label="Funcionário", command=self.tela_lista_func)
+        Menu_Lis.add_separator()
+        Menu_Lis.add_command(label="Tabela INSS", command=self.tela_lista_inss)
+        Menu_Lis.add_command(label="Tabela IRRF", command=self.tela_lista_irrf)
+        Menu_Lis.add_separator()  
+        Menu_Lis.add_command(label="Usuário Sistema", command=self.tela_lista_user)  
+        MenuBar.add_cascade(label="Listar", menu=Menu_Lis)
+
+        #Menu Calculos
+        Menu_Calc = Menu(MenuBar, tearoff=0)
+        Menu_Calc.add_command(label="Cálculos", command=self.tela_calculo)
+        MenuBar.add_cascade(label='Cálculos', menu=Menu_Calc)
+
+        #Menu Sobre
+        Menu_Sobre = Menu(MenuBar, tearoff=0)
+        Menu_Sobre.add_command(label="Cálculos", command=lambda: self.sobre())
+        MenuBar.add_cascade(label='Sobre', menu=Menu_Sobre)
+
+        #Painel Superior
+        PainelSuperior = Frame(self.Janela)
+        PainelSuperior["pady"] = 5
+        PainelSuperior.pack()
+
+        #Título do Painel Superior
+        Titulo = Label(PainelSuperior, text="Güte Arbeit Sistema de RH", justify='center', font=fonte_Titulo, fg='blue')
+        #titulo["font"] = ("Arial", "16", "bold")
+        Titulo.pack()
+
+        #Painel Central
+        Painel_Central = Frame(self.Janela)
+        Painel_Central.pack()
+
+        #self.Janela.mainloop()
+
+    def sobre():
+        Jan1.update()
+        Jan1.deiconify()
+
+    
  
 
-    def centralizar_window(window):
-        windowWidth =  window.winfo_reqwidth()
-        windowHeight = window.winfo_reqheight()
-        #messagebox.showinfo('Teste', 'Width' + str(windowWidth) + 'Height' + str(windowHeight))
-        # Gets both half the screen width/height and window width/height
-        positionRight = int(window.winfo_screenwidth()/2 - windowWidth/1.5)
-        positionDown = int(window.winfo_screenheight()/2 - windowHeight/3.5)
-        # Positions the window in the center of the page.
-        window.geometry("+{}+{}".format(positionRight, positionDown))
+    def _quit(self):
+        #Jan1.destroy()
+        #Jan1.quit
+        self.Janela.quit()
+        self.Janela.destroy()
+        #Tk.quit(all)
+        #quit(all)
+        #exit(all)  
 
 
-    def tela_cad_user(self):
+    def tela_cad_user():
             #global Tela_Cad_User, txt_Nome_User, txt_Senha_User
-            self.Tela_Cad_User = Tk()
-            self.Tela_Cad_User.title('Cadastro de Usuários')
-            Telas_Sys.centralizar_window(self.Tela_Cad_User)
-            self.Tela_Cad_User.config()
-            self.Tela_Cad_User.geometry('250x100')
+            Tela_Cad_User = Tk()
+            Tela_Cad_User.title('Cadastro de Usuários')
+            centralizar_window(Tela_Cad_User)
+            Tela_Cad_User.config()
+            Tela_Cad_User.geometry('250x100')
 
-            Frame_Titulo_User = Frame(self.Tela_Cad_User)
+            Frame_Titulo_User = Frame(Tela_Cad_User)
             Frame_Titulo_User.pack(side=TOP)
             lblCadser = Label(Frame_Titulo_User, text='Cadastro de Usuários', font=fonte_Titulo, fg='blue')
             lblCadser.pack(side=TOP)
@@ -1016,13 +1081,13 @@ class Telas_Sys():
             Frame_Dados_User.pack()
             lbl_Nome_User = Label(Frame_Dados_User, text='Usuário: ', font=fonte_Normal)
             lbl_Nome_User.grid(row=0)
-            self.txt_Nome_User = Entry(Frame_Dados_User, font=fonte_Normal)
-            self.txt_Nome_User.grid(row=0, column=1)
+            txt_Nome_User = Entry(Frame_Dados_User, font=fonte_Normal)
+            txt_Nome_User.grid(row=0, column=1)
             lbl_Pass_User = Label(Frame_Dados_User, text='Senha: ', font=fonte_Normal)
             lbl_Pass_User.grid(row=1)
-            self.txt_Senha_User = Entry(Frame_Dados_User, font=fonte_Normal, show='*')
-            self.txt_Senha_User.grid(row=1, column=1)
-            self.txt_Nome_User.focus()
+            txt_Senha_User = Entry(Frame_Dados_User, font=fonte_Normal, show='*')
+            txt_Senha_User.grid(row=1, column=1)
+            txt_Nome_User.focus()
         
 
             Frame_Btn_Cad_user = Frame(self.Tela_Cad_User)
@@ -1131,7 +1196,7 @@ class Telas_Sys():
         lbl_Dep_valor.pack(fill='both', expand='yes', padx=10, pady=10)
 
 
-    def tela_cad_func():
+    def tela_cad_func(self):
         global Tela_Cadastro_Func, txt_Nome_Func, txt_Setor_Func, txt_SalB_Func, txt_Bonus_Func, txt_Meses_Func, txt_Dias_Func
         Tela_Cadastro_Func = Tk()
         Tela_Cadastro_Func.title('Cadastro de Funcionários')
@@ -1236,69 +1301,8 @@ class Telas_Sys():
 
 
     #Iniciando o Layout da janela, como tamanho, posição, tema, botões, caixas de texto e etc.
-    def programa():
-        global Janela 
-        Bd.connection()   
-        #Criação e Janela propriamente dita, definindo o objeto.
-        Janela = Tk()
-        Janela.title('Gute Arbeit Sistema de RH')
-        Telas_Sys.centralizar_window(Janela)
-        Janela.geometry('660x480+400+150')
-        #--- Criando o Menu
-        MenuBar = Menu(Janela)
-        Janela.config(menu=MenuBar)
-        
-        #---
-        #btn_Sair=Button(Janela, text='Sair', fg='blue', command=_quit)
-        #btn_Sair.pack(side=BOTTOM)
 
         
-        #Menu Arquivo  
-        Menu_Arq= Menu(MenuBar, tearoff=0)  
-        #Menu_Arq.add_command(label="New")  
-        #Menu_Arq.add_separator()  
-        Menu_Arq.add_command(label="Sair", command=_quit)  
-        MenuBar.add_cascade(label="Arquivo", menu=Menu_Arq)
-        #Menu Cadastro  
-        Menu_Cad= Menu(MenuBar, tearoff=0)  
-        Menu_Cad.add_command(label="Funcionário", command=Telas_Sys.tela_cad_func)
-        Menu_Cad.add_separator()  
-        Menu_Cad.add_command(label="Usuário Sistema", command=Telas_Sys.tela_cad_user)  
-        MenuBar.add_cascade(label="Cadastrar", menu=Menu_Cad)
-        #Menu Listagem  
-        Menu_Lis= Menu(MenuBar, tearoff=0)  
-        Menu_Lis.add_command(label="Funcionário", command=Telas_Sys.tela_lista_func)
-        Menu_Lis.add_separator()
-        Menu_Lis.add_command(label="Tabela INSS", command=Telas_Sys.tela_lista_inss)
-        Menu_Lis.add_command(label="Tabela IRRF", command=Telas_Sys.tela_lista_irrf)
-        Menu_Lis.add_separator()  
-        Menu_Lis.add_command(label="Usuário Sistema", command=Telas_Sys.tela_lista_user)  
-        MenuBar.add_cascade(label="Listar", menu=Menu_Lis)
-
-        #Menu Calculos
-        Menu_Calc = Menu(MenuBar, tearoff=0)
-        Menu_Calc.add_command(label="Cálculos", command=Telas_Sys.tela_calculo)
-        MenuBar.add_cascade(label='Cálculos', menu=Menu_Calc)
-
-        #Painel Superior
-        PainelSuperior = Frame(Janela)
-        PainelSuperior["pady"] = 5
-        PainelSuperior.pack()
-
-        #Título do Painel Superior
-        Titulo = Label(PainelSuperior, text="Güte Arbeit Sistema de RH", justify='center', font=fonte_Titulo, fg='blue')
-        #titulo["font"] = ("Arial", "16", "bold")
-        Titulo.pack()
-
-        #Painel Central
-        Painel_Central = Frame(Janela)
-        Painel_Central.pack()
-
-        #
-
-
-
-        #janela.mainloop()
 
 
 
@@ -1321,19 +1325,26 @@ def getval():
         parc_inss = 148.71
 
 #Função Sair  
-def _quit():  
-   Janela.quit()  
-   #Janela.destroy()  
-   exit()  
+
 
 def teste():
     pass
     
 
+def main():
+    SP.Splash_Screen.destroy()
+    root = Tk.Tk()
+    #root.update()
+    #root.deiconify()    
+    myapp = Programa_Prin(root) #Chamando a classe
+    mainloop() #Aguardando eventos mantedo a tela ativa
+    #Programa_Prin._quit()
+        
 
-T = Telas_Sys()
-T.tela_splash()
-T.Splash_Screen.after(2000, T.tela_login())
+if __name__ == '__main__':
+    
+    SP = Splash()
+    SP.Splash_Screen.after(2000, Login)
+    SP.Splash_Screen.mainloop()
 
-
-mainloop()
+    

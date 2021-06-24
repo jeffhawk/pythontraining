@@ -1,142 +1,128 @@
 #coding: utf-8
+#############################################################################
 '''PROJETO DE SALA DE AULA - SISTEMA DE LIVRARIA
-Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de nota na matéria de APPC
-no curso de SISTEMAS DE INFORMAÇÃO, sob a supervisão do Ilmo. Prof. André de Carvalho
+Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de 
+aula para obtenção de nota na matéria de APPC
+no curso de SISTEMAS DE INFORMAÇÃO, sob a supervisão do Ilmo. 
+Prof. André de Carvalho
 
 JEFFERSON EDUARDO LUIZ
 RA 19568823
 
-Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendidas de forma autônoma ao curso.
-Também foi utilizado o GUI(Graphical User Interface) Tkinter para desenvolvimento do programa.
+Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas 
+funcionalidades aprendidas de forma autônoma ao curso.
+Também foi utilizado o GUI(Graphical User Interface) Tkinter para 
+desenvolvimento do programa.
 
 '''
-
+#############################################################################
+# Importando as bibliotecas
 import os
-import ctypes 
 import sys
 import tkinter as tk
+import subprocess
 from os import system
+from os import *
 from tkinter import *
-from tkinter import font, messagebox
 from tkinter import *
 import time
 from time import *
+from tkinter.simpledialog import askstring
+from tkinter import font
+from tkinter import messagebox
+from tkinter import Entry
+from tkinter import ttk
+from tkinter.font import BOLD
+import inspect
+from functools import partial
+import string
+import subprocess
 
-
+#============================================================================
 # Declaração de variáveis globais
-
-global caminho
+biblio = False
+caminho = 'InstantClient'
 biblios = ['pip','cx_Oracle','setuptools','pywin32']
 atua = ''
 i=0
 #biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
-caminho = 'D:\InstantClient'
 
-# Importando as bibliotecas
-# Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
-def verifica_biblios():
-    global biblio
-    biblio = False
-    while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
-        try: #Inicia as importações
-            import setuptools
-            import string
-            import cx_Oracle
-            import pip
-            import subprocess
-            import inspect
-            import win32api
-            from win32api import GetSystemMetrics
-            #from win32api import MessageBox
-            os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca 'os' para setar o caminho do instantclient
-            biblio = True
-        except ImportError as error1:
-            from os import system
-            system('cls')
-            messagebox.showerror('Error', '{0}'.format(error1))
-            messagebox.showwarning('Atenção!!','Erro ao tentar importar bibliotecas necessárias!!')
-            atua = messagebox.askyesno('Instalar Biblios? S/N?','Deseja instalar as bibliotecas necessárias?')
-            if atua == YES:
-                try:
-                    import os, ctypes, sys
-                    from os import system
-                    import string
-                    import pip
-                    import subprocess
-                    import time
-                    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
-                    for i in biblios:
-                        subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
-                    messagebox.showinfo('Bibliotecas','Instalação concluída!')
-                    biblio = True
-                    break                
-                except ImportError as errorimp:
-                    system('cls')
-                    print('Error: {0}'.format(errorimp))
-                    break
-                except OSError as oserror:
-                    system('cls')
-                    print('OS error: {0}'.format(oserror), sys.exc_info()[0])
-                    if not os.path.exists(caminho):
-                        print(biblio)
-                        print('Diretório não encontrado ou não existe\n\n',)
-                        caminho = input('Entre com o caminho do Instant Client: ')
-                        os.chdir(caminho)
-                        import win32api
-                        from win32api import GetSystemMetrics
-                        import setuptools
-                        import cx_Oracle
-                        import inspect
-                        biblio=True
-                        break
-                    else:
-                        import win32api
-                        from win32api import GetSystemMetrics
-                        import setuptools
-                        import cx_Oracle
-                        import inspect
-                        os.chdir(caminho)
-                except:
-                    print('Unexpected error:', sys.exc_info()[0])
-                    raise
-                else:
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import setuptools
-                    import cx_Oracle
-            else:
-                messagebox.showinfo('Saindo...','Bibliotecas não  instaladas!')
-                biblio = False
-                break
-        except OSError as err:
-            system('cls')
-            print('OS error: {0}'.format(err), sys.exc_info()[0])
-            if not os.path.exists(caminho):
-                print('Diretório não encontrado ou não existe\n\n',)
-                caminho = input('Entre com o caminho do Instant Client: ')
-                os.chdir(caminho)
-                #programa()
-                biblio=True
-                break
-            #else:
-            #    os.chdir('C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6')  
-        except:
-            messagebox.showerror('Error','Unexpected error:' & sys.exc_info()[0])
-            raise
+#============================================================================
+# Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las. Faço
+#várias verificações de erros.
+#============================================================================
+while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na 
+                  #verificação tem a opção da instalação das Bibliotecas
+    try:
+        #Resolvi o problema da janela fantasma aparecendo quando entrava no
+        # loop e perguntava se queria instalar as biblios, era uma instancia
+        # do Tkinter que ficava aberta, eu nome-ei e instanciei ela para 
+        # poder usar um destroy depois.        
+        Phantom = Tk()
+        Phantom.withdraw()
+
+        #====================================================================
+        # Importando as bibliotecas
+        # Verifica se existe as bibliotecas, caso contrário pergunta se quer 
+        # instala-las
+        import cx_Oracle
+        import win32
+        from win32 import *
+        import setuptools
+        import pip
+
+        #====================================================================
+        #Aqui estou usando a funcionalidade da biblioteca
+        #'os' para setar o caminho do instantclient
+        os.chdir(caminho)
+        #Tudo saindo OK ele atualiza a instancia fantasma e destroy
+        Phantom.update()
+        Phantom.destroy()
+        biblio = True #Aqui sai do laço
+    except ImportError as error1:
+        from os import system
+        messagebox.showerror('Erro Bibliotecas','Error: ' + str(error1))
+        messagebox.showerror('Erro Bibliotecas','Erro ao tentar importar bibliotecas necessárias!!')
+        atua = messagebox.askyesno('Instalar Bibliotecas','Deseja instalar as bibliotecas necessárias? - S/N: ')
+        if atua == YES:
+            try:
+                import pip
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
+                for i in biblios:
+                    subprocess.check_call([sys.executable, '-m', 'pip', 'install', i])
+                messagebox.showinfo('Bibliotecas','Instalação concluída!')
+            except ImportError as errorimp:
+                messagebox.showerror('Erro Bibliotecas','Error: '+ str(errorimp))
+                exit()
+            except:
+                messagebox.showerror('Erro','Unexpected error:')
+                raise
         else:
-            # Cláusula 'else' do 'try/except',  só é executada se
-            # não ocorreu nenhum erro
-            import win32api
-            from win32api import GetSystemMetrics
-            import setuptools
-            import cx_Oracle
-            import inspect
-            biblio=True
-            break  # Este comando encerra o 'while True'
-        if biblio == True or atua == YES:
-            verifica_biblios()
+            messagebox.showerror('Erro', 'Bibliotecas não instaladas, Saindo...!')
+            biblio = False
+            quit()
+    except OSError as err:
+        messagebox.showerror('Erro OS', 'OS error: ' + str(err))
+        if not os.path.exists(caminho):
+            messagebox.showerror('OS Erro','Diretório não encontrado ou não existe',)
+            caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
+            os.chdir(caminho)
+            #programa()
+            Phantom.update()
+            Phantom.destroy()
+            biblio=True 
+    except:
+        messagebox.showerror('Error', 'Unexpected error:')
+        raise
+    else:
+        # Cláusula 'else' do 'try/except',  só é executada se
+        # não ocorreu nenhum erro
+        import setuptools
+        import cx_Oracle
+        import inspect
+        biblio=True     # Este comando encerra o 'while True'
 
-
+#============================================================================
 def cadastreAutor (conexao):
     stack = inspect.stack()
     try:
@@ -731,94 +717,82 @@ def centralizar_window(window):
     # Positions the window in the center of the page.
     window.geometry("+{}+{}".format(positionRight, positionDown))
 
-def _quit():  
-   Tela_Prin.quit()  
-   Tela_Prin.destroy()  
-   exit()
 
-def programa():
-    global Tela_Prin
-    #print ('PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES')
-    connection()
-    Tela_Prin = Tk()
-    centralizar_window(Tela_Prin)
-    Tela_Prin.geometry('680x420+350+150')
-    Tela_Prin.title('Livraria')
-    MenuBar = Menu(Tela_Prin)
-    Tela_Prin.config(menu=MenuBar)
-    
-    #Menu Cadastrar 
-    Menu_Cad= Menu(MenuBar, tearoff=0)  
-    Menu_Cad.add_command(label='Autor')
-    Menu_Cad.add_command(label='Livro') 
-    #Menu_Cad.add_separator()  
-    #Menu_Cad.add_command(label="Sair", command=_quit)  
-    MenuBar.add_cascade(label='Cadastrar', menu=Menu_Cad)
+#============================================================================
+class Programa(object):
 
-    #Menu Remover 
-    Menu_Rem= Menu(MenuBar, tearoff=0)  
-    Menu_Rem.add_command(label='Autor')
-    Menu_Rem.add_command(label='Livro') 
-    #Menu_Cad.add_separator()  
-    #Menu_Cad.add_command(label="Sair", command=_quit)  
-    MenuBar.add_cascade(label='Remover', menu=Menu_Rem)
+    def __init__(self, parent):
+        connection()
+        self.Tela_Prin = parent
+        centralizar_window(self.Tela_Prin)
+        self.Tela_Prin.geometry('680x420+350+150')
+        self.Tela_Prin.title('Livraria - PROGRAMA PARA PARA CADASTRAR LIVROS\
+ E SEUS AUTORES')
+        MenuBar = Menu(self.Tela_Prin)
+        self.Tela_Prin.config(menu=MenuBar)
+        #====================================================================
+        #Menu Cadastrar 
+        Menu_Cad= Menu(MenuBar, tearoff=0)  
+        Menu_Cad.add_command(label='Autor')
+        Menu_Cad.add_command(label='Livro') 
+        #Menu_Cad.add_separator()  
+        #Menu_Cad.add_command(label="Sair", command=_quit)  
+        MenuBar.add_cascade(label='Cadastrar', menu=Menu_Cad)
+        #====================================================================
+        #Menu Remover 
+        Menu_Rem= Menu(MenuBar, tearoff=0)  
+        Menu_Rem.add_command(label='Autor')
+        Menu_Rem.add_command(label='Livro') 
+        #Menu_Cad.add_separator()  
+        #Menu_Cad.add_command(label="Sair", command=_quit)  
+        MenuBar.add_cascade(label='Remover', menu=Menu_Rem)
+        ########################################################
+        #Menu Listagem 
+        Menu_Lis= Menu(MenuBar, tearoff=0)  
+        Menu_Lis.add_command(label='Autores')
+        MenuBar.add_cascade(label="Listagem", menu=Menu_Lis)
+        Menu_Lis1 = Menu(Menu_Lis, tearoff=0)
+        Menu_Lis1.add_command(label='Listar Todos os Livros')
+        Menu_Lis1.add_command(label='LISTAR - Livros até valor')
+        Menu_Lis1.add_command(label='LISTAR - Livros entre valores')
+        Menu_Lis1.add_command(label='LISTAR - Livros acima valor')
+        Menu_Lis.add_cascade(label='Livros', menu=Menu_Lis1)
+        ##########################################################
+        #Menu Sair
+        Menu_Sair= Menu(MenuBar, tearoff=0)  
+        #Menu_Cad.add_command(label='Autor')
+        #Menu_Cad.add_command(label='Livro') 
+        #Menu_Cad.add_separator()  
+        Menu_Sair.add_command(label="Sair", command=self._quit)  
+        MenuBar.add_cascade(label='Sair', menu=Menu_Sair)
+        #############################################################
+        #Barra de Status
+        statusbar = tk.Label(self.Tela_Prin, text='Livraria BD + GUI', bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        statusbar.pack(side=tk.BOTTOM, fill=tk.X)
+ 
+        #Menu_Cad.add_separator()  
+        #Menu_Cad.add_command(label="Sair", command=_quit)  
 
-    #Menu Listagem 
-    Menu_Lis= Menu(MenuBar, tearoff=0)  
-    Menu_Lis.add_command(label='Autores')
-    MenuBar.add_cascade(label="Listagem", menu=Menu_Lis)
-    Menu_Lis1 = Menu(Menu_Lis, tearoff=0)
-    Menu_Lis1.add_command(label='Listar Todos os Livros')
-    Menu_Lis1.add_command(label='LISTAR - Livros até valor')
-    Menu_Lis1.add_command(label='LISTAR - Livros entre valores')
-    Menu_Lis1.add_command(label='LISTAR - Livros acima valor')
-    Menu_Lis.add_cascade(label='Livros', menu=Menu_Lis1)
-    
-    #Menu Sair
-    Menu_Sair= Menu(MenuBar, tearoff=0)  
-    #Menu_Cad.add_command(label='Autor')
-    #Menu_Cad.add_command(label='Livro') 
-    #Menu_Cad.add_separator()  
-    Menu_Sair.add_command(label="Sair", command=_quit)  
-    MenuBar.add_cascade(label='Sair', menu=Menu_Sair)
-
-    #Barra de Status
-    statusbar = tkinter.Label(Tela_Prin, text='Livraria BD + GUI', bd=1, relief=tkinter.SUNKEN, anchor=tkinter.W)
-    statusbar.pack(side=tkinter.BOTTOM, fill=tkinter.X)
-    
-    
-   
-    
-    
-    
-    
-    
-    #Menu_Cad.add_separator()  
-    #Menu_Cad.add_command(label="Sair", command=_quit)  
-    
+        #self.Tela_Prin.mainloop()
 
 
-    #Tela_Prin.mainloop()
-  
+    def _quit(self):  
+        self.Tela_Prin.quit()
+        self.Tela_Prin.destroy()
+        #exit()   
 
-    #saida()            
-    #print ('\nOBRIGADO POR USAR ESTE PROGRAMA')
 
 
-# daqui para cima  temos definições de subprogramas
-# daqui para baixo temos o programa
-
-''' 
-    print ('6) LISTAR    todos os Livros')
-    print ('7) LISTAR    os Livros até certo preço') # fazer
-    print ('8) LISTAR    os Livros numa faixa de preço') # fazer
-    print ('9) LISTAR    os Livros acima de um certo preço') # fazer
-'''
-
-#messagebox.showinfo('Teste', biblio)
-verifica_biblios()
-if biblio == True:
-    programa()
-    mainloop()
-else:
-    messagebox.showinfo('Saindo....', 'Resolveu sair!')
+if __name__ == '__main__':
+    try:
+        #Programa() #Chamando a classe
+        #mainloop() #Aguardando eventos mantedo a tela ativa
+        root = Tk()
+        #root.update()
+        #root.deiconify()    
+        myapp = Programa(root) #Chamando a classe
+        root.mainloop() #Aguardando eventos mantedo a tela ativa
+        #Programa_Prin._quit()
+    except:
+        messagebox.showinfo('Erro', 'Erro ao carregar programa principal')
+        messagebox.showerror('Error',str(sys.exc_info()[0]) + ': ' + str(sys.exc_info()[1]))
