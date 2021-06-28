@@ -118,34 +118,41 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
 
 #============================================================================
 def centralizar_window(window):
-        windowWidth =  window.winfo_reqwidth()
-        windowHeight = window.winfo_reqheight()
-        #messagebox.showinfo('Teste', 'Width' + str(windowWidth) + 'Height' + str(windowHeight))
-        # Gets both half the screen width/height and window width/height
-        positionRight = int(window.winfo_screenwidth()/2 - windowWidth/1.5)
-        positionDown = int(window.winfo_screenheight()/2 - windowHeight/3.5)
-        # Positions the window in the center of the page.
-        window.geometry("+{}+{}".format(positionRight, positionDown))
+    window.withdraw()
+    window.update_idletasks()
+    windowWidth =  window.winfo_reqwidth()
+    windowHeight = window.winfo_reqheight()
+    #messagebox.showinfo('Teste', 'Width' + str(windowWidth) + 'Height' + str(windowHeight))
+    # Gets both half the screen width/height and window width/height
+    positionRight = int(window.winfo_screenwidth()/2.5 - windowWidth/1.5)
+    positionDown = int(window.winfo_screenheight()/2.5 - windowHeight/1.75)
+
+    '''print(windowWidth)
+    print(windowHeight)
+    print(window.winfo_screenwidth())
+    print(window.winfo_screenheight())
+    print(positionRight)
+    print(positionDown)'''
+    # Positions the window in the center of the page.
+    window.geometry("+{}+{}".format(positionRight, positionDown))
+    #print(window.geometry())
+    window.deiconify()
 
 class Bd:
-    tentativa = 0
-    servidor = 'localhost/xe'
-    usuario = 'system'
-    senha = 'oracle'
-    conexao = cx_Oracle.connect(dsn=servidor, user=usuario, password=senha)
-
-    def conn():
-        servidor = 'localhost/xe'
-        usuario = 'system'
-        senha = 'oracle'
-        Bd.conexao = cx_Oracle.connect(dsn=servidor, user=usuario, password=senha)
+    def __init__(self):
+        self.tentativa = 0
+        self.servidor = 'localhost/xe'
+        self.usuario = 'system'
+        self.senha = 'oracle'
+        self.conexao = cx_Oracle.connect(dsn=self.servidor, user=self.usuario, password=self.senha)
+        
 
 
     def connection():
         #os.chdir(caminho)
         try:
-            Bd.conn()
-            cursor  = Bd.conexao.cursor()
+            T = Bd()
+            cursor  = T.conexao.cursor()
         except cx_Oracle.DataError as err:
                     messagebox.showerror('Erro','DataBase error: ' + str(err))
         except cx_Oracle.DatabaseError as err:
@@ -167,42 +174,10 @@ class Bd:
         except cx_Oracle.DatabaseError:
             messagebox.showerror('DB Error', 'Erro de conexão com o BD')
             return
-        
-        '''
-        try:
-            cursor.execute('DROP TABLE Autorias')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-
-        try:
-            cursor.execute('DROP SEQUENCE seqAutores')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a sequencia nao existe
-
-        try:
-            cursor.execute('DROP TABLE Autores')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-
-        try:
-            cursor.execute('DROP SEQUENCE seqLivros')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a sequencia nao existe
-
-        try:
-            cursor.execute('DROP TABLE Livros')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-        '''
 
         try:
             cursor.execute('CREATE SEQUENCE seqUsers START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE')
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DataError as err:
                 messagebox.showerror('Erro','DataBase error: ' + str(err))
         except cx_Oracle.DatabaseError as err:
@@ -231,7 +206,7 @@ class Bd:
 
         try:
             cursor.execute("CREATE TABLE logins (Id NUMBER(3) PRIMARY KEY, users NVARCHAR2(12) UNIQUE NOT NULL, pass NVARCHAR2(8) NOT NULL)")
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DataError as err:
                     messagebox.showerror('Erro','DataBase error: ' + str(err))
         except cx_Oracle.DatabaseError as err:
@@ -260,19 +235,19 @@ class Bd:
 
         try:
             cursor.execute("CREATE SEQUENCE seqFunc START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute("CREATE SEQUENCE seqInss START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute('CREATE TABLE inss (Id_Inss NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DatabaseError as err:
             error, = err.args
             #print('Oracle-Error-Code:', error.code)
@@ -295,13 +270,13 @@ class Bd:
 
         try:
             cursor.execute("CREATE SEQUENCE seqIrrf START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute('CREATE TABLE irrf (Id_Irrf NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DatabaseError as err:
             error, = err.args
             #print('Oracle-Error-Code:', error.code)
@@ -347,7 +322,7 @@ class Bd:
 
         try:
             cursor.execute("CREATE TABLE Funcionarios (Id_Func NUMBER(5) PRIMARY KEY, Nome_Func NVARCHAR2(50) UNIQUE NOT NULL, Nome_Setor NVARCHAR2(50) NOT NULL, Salario_Bruto NUMBER(6,2) NOT NULL, Bonus NUMBER(6,2), Meses_Trab NUMBER(3), Dias_Ferias NUMBER(3), Dep NUMBER(2))")
-            Bd.conexao.commit()
+            T.conexao.commit()
         except cx_Oracle.DataError as err:
                     messagebox.showerror('DB Erro','DataBase error: ' + str(err))
         except cx_Oracle.DatabaseError as err:
@@ -373,62 +348,6 @@ class Bd:
             return
         else:
             pass # ignora, pois a tabela já existe
-
-
-    def logar(self, user, password):
-        try:
-            user1 = user
-            pass1 = password
-            entra = 0
-            Bd.conn()
-            cursor = self.conexao.cursor()
-            if not user1:
-                messagebox.showinfo('Alerta','Você deve inserir um nome para Logar, não pode ser em branco!')
-                Bd.tentativa += 1
-                return
-            cursor.execute("SELECT * FROM logins WHERE logins.users='"+user1+"' AND logins.pass='"+pass1+"'")
-            Bd.conexao.commit ()
-            linha = cursor.fetchone()
-            if not linha:
-                messagebox.showinfo('Informação','Usuário ou senha incorreta, tente outra vez')
-                entra = 0
-                Bd.tentativa += 1
-            else:
-                #messagebox.showinfo('Logando...','Entrando')
-                entra = 1
-                return
-            if Bd.tentativa > 3 :
-                cad = messagebox.askyesno('Teste', 'Gostaria de cadastrar um usuário de acesso?')
-                if cad == YES:
-                    #Login_Tela.destroy()
-                    Telas_Sys.tela_cad_user(Telas_Sys)
-
-        except cx_Oracle.DataError as err:
-            messagebox.showerror('DB Error: ' + str(err),'DataBase error: {0}'.format(err), sys.exc_info()[0])
-        except cx_Oracle.DatabaseError as err:
-            error, = err.args
-            #messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
-            #messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
-            if error.code == 1400:
-                messagebox.showerror(error.code,'Você deve inserir um nome para o Autor, não pode ser em branco')
-                return
-            elif error.code == 1:
-                messagebox.showerror(error.code,'Autor repetido')
-                return
-            elif error.code == 936:
-                stack = inspect.stack()
-                messagebox.showerror(error.code,'Erro de Sintax, favor verificar código' + stack[1].function)
-            elif error.code == 933:
-                messagebox.showerror(error.code,'Favor usar "." ao invés de "," nos valores numéricos decimais')
-            elif error.code == 2292:
-                messagebox.showerror(error.code,'O autor tem livros cadastrados, favor remover os livros primeiro!')
-            elif error.code == 904:
-                messagebox.showerror(error.code,'Campo não encontrado na tabela')
-            elif error.code == 955:
-                pass
-        if entra == 1:
-           #Login_Tela.destroy()
-            Telas_Sys.programa()
 
 
     def cadastrar_user(nome, senha):
@@ -897,17 +816,17 @@ class Bd:
 class Splash:
 
     def __init__(self) -> None:
-        #global Splash_Screen
-        Bd.conn()
+        
+        Bd()
         self.Splash_Screen = tkinter.Tk()
         centralizar_window(self.Splash_Screen)
         #splash_Screen.eval('tk::PlaceWindow . center')
         #Definindo o tamanho 
         #splash_Screen.geometry('250x100')
-        #Removendo as bordas
-        self.Splash_Screen.overrideredirect(True)
+        self.Splash_Screen.overrideredirect(True) #Removendo as bordas
         self.Splash_Screen.config()
-        Label1 = Label(self.Splash_Screen, text='Bem vindo ao Gute Arbeit', fg='blue', font=fonte_Titulo).pack()
+        Label1 = Label(self.Splash_Screen, text='Bem vindo ao Gute Arbeit',\
+             fg='blue', font=fonte_Titulo).pack()
         #TesteImage1(splash_Screen)
         imagem = PhotoImage(file= sys.path[0] + '\images\GA1.png')
         #img = imagem.subsample(1,1)
@@ -929,8 +848,9 @@ class Login:
         #Fecha a janela de splash
         SP.Splash_Screen.destroy()
         #if Bd.tentativa <= 3:
-        Bd.conn()
-        Bd.connection()
+        Bd()
+        T = Bd()
+        
         #Criando a tela de login
         Login_Tela = tkinter.Tk()
         #login_Tela.geometry('400x150')
@@ -943,9 +863,11 @@ class Login:
         #Criado o frame do título
         Frame_Login_titulo = Frame(Login_Tela).pack(side=TOP)
 
-        lbl_Titulo_Login = Label(Frame_Login_titulo, text='LOGIN', font=fonte_Titulo)
+        lbl_Titulo_Login = Label(Frame_Login_titulo, text='LOGIN',\
+             font=fonte_Titulo)
         lbl_Titulo_Login.pack()
 
+        #====================================================================
         #criando o frame de entrada de dados
         Frame_Dados_Login = Frame(Login_Tela)
         Frame_Dados_Login.pack()
@@ -960,14 +882,14 @@ class Login:
         txt_Pass = Entry(Frame_Dados_Login, width=20, font=fonte_Texto, show='*')
         txt_Pass.grid(row=1, column=1)
         
-
+        #====================================================================
         #Criando o frame dos botões
         Frame_Btn = Frame(Login_Tela).pack(side=BOTTOM)
         img_Sair = PhotoImage(file= sys.path[0] + './images/exit (2).png')
         img_Sair = img_Sair.subsample(3,3)
         img_log = PhotoImage(file= sys.path[0] + './images/user1.png')
         img_log = img_log.subsample(3,3)
-        btn_Entrar=Button(Frame_Btn, text='Login', fg='blue', width=55, height=25, command=lambda: Bd.logar(Bd, txt_Id_Usuario.get(), txt_Pass.get()), image=img_log, compound=LEFT, font=fonte_Normal)
+        btn_Entrar=Button(Frame_Btn, text='Login', fg='blue', width=55, height=25, command=lambda: self.logar(txt_Id_Usuario.get(), txt_Pass.get()), image=img_log, compound=LEFT, font=fonte_Normal)
         #btn_Entrar.bind('<Button-1>', logar)
         btn_Entrar.imagem = img_log
         btn_Entrar.pack(side=LEFT)
@@ -975,12 +897,64 @@ class Login:
         btn_Sair.imagem = img_Sair
         btn_Sair.pack(side=RIGHT)
 
-        
-        
-
-
-
+        #====================================================================
         Login_Tela.mainloop()
+
+    def logar(self, user, password):
+        try:
+            Bd
+            T = Bd()
+            user1 = user
+            pass1 = password
+            entra = 0
+            cursor = T.conexao.cursor()
+            if not user1:
+                messagebox.showinfo('Alerta','Você deve inserir um nome para Logar, não pode ser em branco!')
+                T.tentativa += 1
+                return
+            cursor.execute("SELECT * FROM logins WHERE logins.users='"+user1+"' AND logins.pass='"+pass1+"'")
+            T.conexao.commit()
+            linha = cursor.fetchone()
+            if not linha:
+                messagebox.showinfo('Informação','Usuário ou senha incorreta, tente outra vez')
+                entra = 0
+                T.tentativa += 1
+            else:
+                #messagebox.showinfo('Logando...','Entrando')
+                entra = 1
+                return
+            if T.tentativa > 3 :
+                cad = messagebox.askyesno('Teste', 'Gostaria de cadastrar um usuário de acesso?')
+                if cad == YES:
+                    #Login_Tela.destroy()
+                    Telas_Sys.tela_cad_user(Telas_Sys)
+
+        except cx_Oracle.DataError as err:
+            messagebox.showerror('DB Error: ' + str(err),'DataBase error: {0}'.format(err), sys.exc_info()[0])
+        except cx_Oracle.DatabaseError as err:
+            error, = err.args
+            #messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
+            #messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
+            if error.code == 1400:
+                messagebox.showerror(error.code,'Você deve inserir um nome para o Autor, não pode ser em branco')
+                return
+            elif error.code == 1:
+                messagebox.showerror(error.code,'Autor repetido')
+                return
+            elif error.code == 936:
+                stack = inspect.stack()
+                messagebox.showerror(error.code,'Erro de Sintax, favor verificar código' + stack[1].function)
+            elif error.code == 933:
+                messagebox.showerror(error.code,'Favor usar "." ao invés de "," nos valores numéricos decimais')
+            elif error.code == 2292:
+                messagebox.showerror(error.code,'O autor tem livros cadastrados, favor remover os livros primeiro!')
+            elif error.code == 904:
+                messagebox.showerror(error.code,'Campo não encontrado na tabela')
+            elif error.code == 955:
+                pass
+        if entra == 1:
+           #Login_Tela.destroy()
+            Telas_Sys.programa()
 
 
 
