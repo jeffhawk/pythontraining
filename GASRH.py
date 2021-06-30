@@ -37,7 +37,7 @@ from functools import partial
 import string
 import subprocess
 import time
-import cx_Oracle
+
 
 #============================================================================
 #Declaração de variáveis globais - Estou ainda verificando a real 
@@ -147,8 +147,8 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         from PIL import ImageTk
         biblio=True     # Este comando encerra o 'while True'
 print(atua)
-if atua == YES:
-    system('python.exe gasrh.py')
+if atua == True:
+    system('python.exe' +sys.path[0]+ '\gasrh.py')
     #subprocess.check_call([sys.executable, '.\livraria_gui.py'])
     #quit()
 #============================================================================
@@ -173,6 +173,7 @@ def centralizar_window(window):
     #print(window.geometry())
     window.deiconify()
 
+##############################################################################
 class Conecta_Bd:
 
     def __init__(self) -> None:
@@ -796,7 +797,7 @@ class Conecta_Bd:
         else:
             pass # ignora, pois a tabela já existe
 
-#Tela de apresentação
+#Tela de apresentação#########################################################
 class Splash:
 
     def __init__(self) -> None:
@@ -822,7 +823,7 @@ class Splash:
         self.Splash_Screen.destroy()
         #Programa_Prin.tela_login()
 
-#Tela de login
+#Tela de login################################################################
 class Login:
 
     BD = Conecta_Bd()
@@ -937,6 +938,7 @@ class Login:
             self.Login_Tela.destroy()
             main()
 
+##############################################################################
 class Cad_User:
     BD = Conecta_Bd()
 
@@ -1025,7 +1027,7 @@ class Cad_User:
                 L.Login_Tela.focus()'''
             pass
 
-
+##############################################################################
 class List_User:
     BD = Conecta_Bd()
 
@@ -1096,7 +1098,7 @@ class List_User:
         else:
             pass # ignora, pois a tabela já existe
 
-
+##############################################################################
 class Cad_Func:
     BD = Conecta_Bd()
 
@@ -1221,7 +1223,7 @@ class Cad_Func:
                 self.Tela_Cadastro_Func.destroy()
                 pass
 
-
+##############################################################################
 class List_Func:
     BD = Conecta_Bd()
 
@@ -1230,7 +1232,7 @@ class List_Func:
         self.Tela_Lista_Func.title('Listar Funcionários')
         centralizar_window(self.Tela_Lista_Func)
         
-        Frame_func = LabelFrame(self.Tela_Lista_Func, text='Funcionários:')
+        Frame_func = LabelFrame(self.Tela_Lista_Func, text='Funcionários:', font=fonte_Titulo)
         Frame_func.pack(fill='both', expand='yes', padx=10, pady=10)
 
         self.tv = ttk.Treeview(Frame_func, columns=('ID', 'Nome', 'Setor', 'Salario_Bruto', 'Bonus', 'Meses', 'Dias','Dep'), show='headings')
@@ -1250,7 +1252,7 @@ class List_Func:
         self.tv.heading('Meses', text='M. Trabalhados')
         self.tv.heading('Dias', text='Dias/Férias')
         self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack(fill='both', expand='yes', padx=10, pady=10)
         self.listar_func()
         
     def listar_func(self):
@@ -1304,16 +1306,16 @@ class List_Func:
         else:
             pass # ignora, pois a tabela já existe        
 
-
+##############################################################################
 class Inss:
     BD = Conecta_Bd()
 
     def __init__(self) -> None:
-        Tela_Lista_INSS = Toplevel()
-        Tela_Lista_INSS.title('Listar INSS')
+        self.Tela_Lista_INSS = Toplevel()
+        self.Tela_Lista_INSS.title('Listar INSS')
         #centralizar_window(Tela_Lista_Func)
         
-        Frame_INSS = LabelFrame(Tela_Lista_INSS, text='Tabela INSS:')
+        Frame_INSS = LabelFrame(self.Tela_Lista_INSS, text='Tabela INSS:')
         Frame_INSS.pack(fill='both', expand='yes', padx=10, pady=10)
 
         self.tv = ttk.Treeview(Frame_INSS, columns=('ID', 'SalCont', 'Aliq', 'Parc_Dedu'), show='headings')
@@ -1334,7 +1336,8 @@ class Inss:
             cursor.execute("SELECT * FROM inss ORDER BY Id_inss")   
             linha = cursor.fetchone() # linha(1,'Arthur')
             if not linha:
-                messagebox.showwarning ('Alerta','Não há Funcionários cadastrados')
+                messagebox.showwarning ('Alerta','Não há dados cadastrados')
+                self.Tela_Lista_INSS.destroy()
                 return
             aut=0
             self.tv.delete(*self.tv.get_children())
@@ -1379,16 +1382,16 @@ class Inss:
         else:
             pass # ignora, pois a tabela já existe
 
-
+##############################################################################
 class Irrf:
     BD = Conecta_Bd()
     def __init__(self) -> None:
 
-        Tela_Lista_IRFF = Toplevel()
-        Tela_Lista_IRFF.title('Listar IRRF')
+        self.Tela_Lista_IRFF = Toplevel()
+        self.Tela_Lista_IRFF.title('Listar IRRF')
         #centralizar_window(Tela_Lista_Func)
         
-        Frame_IRRF = LabelFrame(Tela_Lista_IRFF, text='Tabela IRRF:')
+        Frame_IRRF = LabelFrame(self.Tela_Lista_IRFF, text='Tabela IRRF:')
         Frame_IRRF.pack(fill='both', expand='yes', padx=10, pady=10)
 
         self.tv = ttk.Treeview(Frame_IRRF, columns=('ID', 'SalCont', 'Aliq', 'Parc_Dedu'), show='headings')
@@ -1403,7 +1406,7 @@ class Irrf:
         self.tv.pack()
         self.listar_IRRF()
 
-        Frame_Dep = LabelFrame(Tela_Lista_IRFF, text='Parcela Dedução Dependes:')
+        Frame_Dep = LabelFrame(self.Tela_Lista_IRFF, text='Parcela Dedução Dependes:')
         Frame_Dep.pack(fill='both', expand='yes', padx=10, pady=10)
         lbl_Dep_valor = Label(Frame_Dep,text='Valor: RS189,59')
         lbl_Dep_valor.pack(fill='both', expand='yes', padx=10, pady=10)
@@ -1414,7 +1417,8 @@ class Irrf:
             cursor.execute("SELECT * FROM irrf ORDER BY Id_irrf")   
             linha = cursor.fetchone() # linha(1,'Arthur')
             if not linha:
-                messagebox.showwarning ('Alerta','Não há Funcionários cadastrados')
+                messagebox.showwarning ('Alerta','Não há dados cadastrados')
+                self.Tela_Lista_IRFF.destroy()
                 return
             aut=0
             self.tv.delete(*self.tv.get_children())
@@ -1459,6 +1463,7 @@ class Irrf:
         else:
             pass # ignora, pois a tabela já existe
 
+##############################################################################
 class Calculo:
     BD = Conecta_Bd()
     def __init__(self) -> None:
@@ -1574,8 +1579,7 @@ class Calculo:
         else:
             pass # ignora, pois a tabela já existe
 
-
-
+##############################################################################
 class Programa_Prin(object):
     #Tela_Cadastro_Func = lambda: Tk()
 
@@ -1586,7 +1590,7 @@ class Programa_Prin(object):
         #Criação e Janela propriamente dita, definindo o objeto.
         self.Janela = parent
         self.Janela.title('Gute Arbeit Sistema de RH')
-        self.Janela.geometry('660x480+400+150')
+        #self.Janela.geometry('660x480+400+150')
         centralizar_window(self.Janela)
         self.Janela.iconphoto(True, tk.PhotoImage(file=ICO)) #para imagens png, jpg
         #self.Tela_Prin.iconbitmap(True, ico) #para images bmp e ico
@@ -1650,9 +1654,7 @@ class Programa_Prin(object):
         #Barra de Status
         statusbar = tk.Label(self.Janela, text='GASRH + GUI', bd=1, relief=tk.SUNKEN, anchor=tk.W)
         statusbar.pack(side=tk.BOTTOM, fill=tk.X)
-
-        #self.Janela.mainloop()
-
+        
     def sobre():
         Jan1.update()
         Jan1.deiconify()

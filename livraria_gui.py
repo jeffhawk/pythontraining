@@ -1436,7 +1436,6 @@ class Listar_Livros_Apartir:
                 self.tv.insert('','end', values=linha)
                 linha = cursor.fetchone()
               
-
 ##############################################################################
 class Programa(object):
     '''fonte_Normal = ("Verdana", "8",'bold')
