@@ -36,7 +36,7 @@ from tkinter import font
 from tkinter import messagebox
 from tkinter import Entry
 from tkinter import ttk
-from tkinter.font import BOLD
+from tkinter.font import BOLD, Font
 import inspect
 from functools import partial
 import string
@@ -53,6 +53,9 @@ i=0
 ICO = sys.path[0] + './images/biblioteca.png'
 IMG = sys.path[0] + '/images/lendo-um-livro.png'
 stack = inspect.stack()
+fonte_Normal = ("Verdana", "8",'bold')
+fonte_Titulo = ('Arial', 16, 'bold')
+fonte_Texto = ('Times New Roman', 12)
 
 #Variável de controle para saber se está tudo ok e seguir com a execução
 #biblio = False 
@@ -241,21 +244,21 @@ class Cad_Autor:
         self.Tela_Cad_Autor.title('Cadastro de Autores')
         centralizar_window(self.Tela_Cad_Autor)
         self.Tela_Cad_Autor.config()
-        self.Tela_Cad_Autor.geometry('250x100')
+        #self.Tela_Cad_Autor.geometry('250x100')
         #---------------------------------------------------------------------
         Frame_Titulo_Autor = Frame(self.Tela_Cad_Autor)
-        Frame_Titulo_Autor.pack(side=TOP)
+        Frame_Titulo_Autor.pack(side=TOP, fill='both', expand='yes', padx=5, pady=5)
         lblCadAutor = Label(Frame_Titulo_Autor, text='Cadastro de Autores', \
             font=('Arial', 16, 'bold'), fg='blue')
-        lblCadAutor.pack(side=TOP)
-        Frame_Dados_Autor = Frame(self.Tela_Cad_Autor)
-        Frame_Dados_Autor.pack()
+        lblCadAutor.pack(side=TOP, fill='both', expand='yes', padx=5, pady=5)
+        Frame_Dados_Autor = LabelFrame(self.Tela_Cad_Autor, text='Cadastro:')
+        Frame_Dados_Autor.pack(fill='both', expand='yes', padx=10, pady=10)
         lbl_Nome_Autor = Label(Frame_Dados_Autor, text='Autor: ', font=(\
             "Verdana", "8",'bold'))
         lbl_Nome_Autor.grid(row=0)
         self.txt_Nome_Autor = Entry(Frame_Dados_Autor, font=("Verdana", "8",\
             'bold'))
-        self.txt_Nome_Autor.grid(row=0, column=1)
+        self.txt_Nome_Autor.grid(row=0, column=1, padx=10, pady=15)
         #lbl_Pass_Autor = Label(Frame_Dados_Autor, text='Senha: ', font=\
         # ("Verdana", "8",'bold'))
         #lbl_Pass_Autor.grid(row=1)
@@ -265,7 +268,7 @@ class Cad_Autor:
         self.txt_Nome_Autor.focus()
         #---------------------------------------------------------------------
         Frame_Btn_Cad_Autor = Frame(self.Tela_Cad_Autor)
-        Frame_Btn_Cad_Autor.pack(side=BOTTOM)
+        Frame_Btn_Cad_Autor.pack(side=BOTTOM, fill='both', expand='yes', padx=10, pady=10)
         btn_Cad_Autor = Button(Frame_Btn_Cad_Autor, text='Cadastrar', \
             command=lambda: self.cadastrar_autor(self.txt_Nome_Autor.get()), \
                 fg='blue', font=("Verdana", "8",'bold'))
@@ -296,9 +299,7 @@ class Cad_Autor:
             #messagebox.showerror('Erro DB','DataBase error: {0}.
             # format('+str(err)+'))' + str(sys.exc_info()[0]))
             if error.code == 1400:
-                messagebox.showerror('Erro DB','Você deve inserir um nome '+\
-                    'para o Autor, não pode ser em branco. Local: ' \
-                        +str(stack[0].function)+', '+ str(stack[1].function))
+                messagebox.showerror('Erro DB','Você deve inserir um nome para o Autor, não pode ser em branco.')
                 self.Tela_Cad_Autor.focus()
                 self.txt_Nome_Autor.focus_set()
                 return
@@ -369,7 +370,7 @@ class Listar_Aut:
         #self.tv.heading('Meses', text='M. Trabalhados')
         #self.tv.heading('Dias', text='Dias/Férias')
         #self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack( padx=10, pady=10)
 
         self.listar_autor()
         
@@ -458,22 +459,29 @@ class Remov_Autor:
         self.Tela_Remov_Autor.title('Remover Autores')
         #self.Tela_Lista_Func.geometry('450x280')
         centralizar_window(self.Tela_Remov_Autor)
-        
-        self.Frame_Rem_Autor = Frame(self.Tela_Remov_Autor)
-        self.Frame_Rem_Autor.pack(fill='both', expand='yes', padx=50, pady=50)
-        lblIdAutor = Label(self.Frame_Rem_Autor, text="Identificacao:", font=fonte)#, width=15)
-        lblIdAutor.pack(side=LEFT)
 
+        frame_Titulo = Frame(self.Tela_Remov_Autor)
+        frame_Titulo.pack(side=TOP, fill='both', expand='yes', padx=1, pady=1)
+        lbl_titulo = Label(frame_Titulo, text='Remover Autor', font=fonte_Titulo, fg='blue')
+        lbl_titulo.pack(padx=1, pady=1)
+        
+        self.Frame_Rem_Autor = LabelFrame(self.Tela_Remov_Autor, text='Identificação')
+        self.Frame_Rem_Autor.pack(fill='both', expand='yes', padx=5, pady=5)
+        lblIdAutor = Label(self.Frame_Rem_Autor, text="Autor:", font=fonte_Normal)#, width=15)
+        lblIdAutor.pack(side=LEFT, padx=10, pady=10)
         self.txtIdAutor = Entry(self.Frame_Rem_Autor)
         #self.txtIdAutor["width"] = 15
         self.txtIdAutor["font"] = fonte
-        self.txtIdAutor.pack(side=LEFT)
+        self.txtIdAutor.pack(side=LEFT, padx=10, pady=10)
 
         Frame_BTN = Frame(self.Tela_Remov_Autor)
-        Frame_BTN.pack(side=BOTTOM)
+        Frame_BTN.pack(side=BOTTOM, fill='both', expand='yes', padx=3, pady=3)
         btnBuscar = Button(Frame_BTN, text="Buscar", font=fonte)
         btnBuscar["command"] = lambda: self.remover_autor(self.txtIdAutor.get())
-        btnBuscar.pack(side=RIGHT)
+        btnBuscar.pack(side=LEFT, padx=3, pady=3)
+        btn_cancelar = Button(Frame_BTN, text='Cancelar', command=self.Tela_Remov_Autor.destroy)
+        btn_cancelar.pack(side=RIGHT, padx=3, pady=3)
+
 
         self.txtIdAutor.focus_set()
 
@@ -544,37 +552,37 @@ class Cad_Livro:
         #global Tela_Cad_User, txt_Nome_User, txt_Senha_User
         self.Tela_Cad_Livro = Toplevel()
         self.Tela_Cad_Livro.title('Cadastro de Livros')
-        self.Tela_Cad_Livro.geometry('350x200')
+        #self.Tela_Cad_Livro.geometry('350x200')
         centralizar_window(self.Tela_Cad_Livro)
         self.Tela_Cad_Livro.config()
         
         #--------------------------------------------------------------------
         Frame_Titulo_Livro = Frame(self.Tela_Cad_Livro)
-        Frame_Titulo_Livro.pack(side=TOP)
+        Frame_Titulo_Livro.pack(side=TOP, fill='both', expand='yes', padx=5)
         lblCadLivro = Label(Frame_Titulo_Livro, text='Cadastro de Livros', \
             font=('Arial', 16, 'bold'), fg='blue')
-        lblCadLivro.pack(side=TOP)
-        Frame_Dados_Livro = Frame(self.Tela_Cad_Livro)
-        Frame_Dados_Livro.pack()
-        
-        #--------------------------------------------------------------------
+        lblCadLivro.pack(side=TOP, fill='both', expand='yes', padx=5, pady=5)
+
+
+        Frame_Dados_Livro = LabelFrame(self.Tela_Cad_Livro, text='Cadastro:')
+        Frame_Dados_Livro.pack(fill='both', expand='yes', padx=10, pady=5)
         lbl_Nome_Livro = Label(Frame_Dados_Livro, text='Nome do Livro: ', \
             font=("Verdana", "8",'bold'))
         lbl_Nome_Livro.grid(row=0)
         self.txt_Nome_Livro = Entry(Frame_Dados_Livro, font=("Verdana", "8",\
             'bold'))
-        self.txt_Nome_Livro.grid(row=0, column=1)
+        self.txt_Nome_Livro.grid(row=0, column=1, padx=5, pady=5)
 
         lbl_Nome_Autor = Label(Frame_Dados_Livro, text='Autor: ', font=(\
             "Verdana", "8",'bold'))
-        lbl_Nome_Autor.grid(row=1)
+        lbl_Nome_Autor.grid(row=1, padx=5, pady=5)
         self.txt_Nome_Autor = Entry(Frame_Dados_Livro, font=("Verdana", "8",\
             'bold'))
-        self.txt_Nome_Autor.grid(row=1, column=1)
+        self.txt_Nome_Autor.grid(row=1, column=1, padx=5, pady=5)
         
         lbl_Valor_Livro = Label(Frame_Dados_Livro, text='Valor: ', font=(\
             "Verdana", "8",'bold'))
-        lbl_Valor_Livro.grid(row=2)
+        lbl_Valor_Livro.grid(row=2, padx=5, pady=5)
         self.txt_Valor_Livro = Entry(Frame_Dados_Livro, font=("Verdana", "8",\
             'bold'))
         self.txt_Valor_Livro.grid(row=2, column=1)
@@ -582,7 +590,7 @@ class Cad_Livro:
     
 
         Frame_Btn_Cad_Autor = Frame(self.Tela_Cad_Livro)
-        Frame_Btn_Cad_Autor.pack(side=BOTTOM)
+        Frame_Btn_Cad_Autor.pack(side=BOTTOM, fill='both', expand='yes', padx=10, pady=10)
         btn_Cad_Autor = Button(Frame_Btn_Cad_Autor, text='Cadastrar', \
             command=lambda: self.cadastrar_livro(self.txt_Nome_Livro.get(),\
                  self.txt_Nome_Autor.get(), self.txt_Valor_Livro.get()), \
@@ -682,7 +690,7 @@ class Remov_Livro:
         self.Tela_Remove_Livro.title('Remover Livros')
         #self.Tela_Lista_Func.geometry('450x280')
         centralizar_window(self.Tela_Remove_Livro)
-        self.Tela_Remove_Livro.focus()
+        self.Tela_Remove_Livro.config()
         #Frame de Busca
         search_Frame = LabelFrame(self.Tela_Remove_Livro, text='Buscar:')
         search_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
@@ -690,7 +698,7 @@ class Remov_Livro:
         lbl_nome_livro.pack(side=LEFT, padx=5, pady=5)
         self.txt_nome_livro = Entry(search_Frame)
         self.txt_nome_livro.pack(side=LEFT, padx=5, pady=5)
-        btn_buscar = Button(search_Frame, text='Listar', command=lambda: self.remova_livro(self.txt_nome_livro.get()))
+        btn_buscar = Button(search_Frame, text='Listar', command=lambda: self.busca_livro(self.txt_nome_livro.get()))
         btn_buscar.pack(side=RIGHT, padx=5, pady=5)
         #self.nome_livro = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
         self.txt_nome_livro.focus_set()
@@ -719,9 +727,11 @@ class Remov_Livro:
 
         action_Frame = LabelFrame(self.Tela_Remove_Livro, text='Ações:')
         action_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
+        btn_deletar = Button(action_Frame, text='Excluir', command=self.remova_livro)
+        btn_deletar.pack(side=LEFT, padx=5, pady=5)
         btn_Cancelar = Button(action_Frame, text='Cancelar', command=self.Tela_Remove_Livro.destroy)
         btn_Cancelar.pack(side=RIGHT, padx=5, pady=5)
-
+        self.Tela_Remove_Livro.mainloop()
         '''
         #print(self.valor)
         if self.nome_livro == None:
@@ -731,42 +741,34 @@ class Remov_Livro:
         else:
             self.remova_livro(self.nome_livro)'''
 
-    def remova_livro (self, livro):
-        rem = 'N'
-        
+    def busca_livro(self, livro):
         try:
             cursor = self.BD.conexao.cursor()
-            nome = livro
-            if not nome:
+            nome = livro+'%'
+            if nome == '':
                 messagebox.showinfo('Info','Favor entrar com o nome do Livro, não pode ser em branco!')
+                #self.Tela_Remove_Livro.update()
+                #self.Tela_Remove_Livro.deiconify()
                 self.Tela_Remove_Livro.focus()
                 self.txt_nome_livro.focus_set()
                 return
-            cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nome+"'")
+            cursor.execute("SELECT codigo FROM Livros WHERE Nome LIKE '"+nome+"'")
             linha = cursor.fetchone()    
             if not linha:
                 messagebox.showinfo('Info','Livro não encontrado')
+                self.tv.delete(*self.tv.get_children())
+                self.txt_nome_livro.delete(0,END)
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+                return
             else:
-                #cursor=conexao.cursor()
-                cursor.execute("SELECT Livros. codigo, Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id AND Livros.Nome='"+nome+"' ORDER BY Livros.Nome")
+                cursor.execute("SELECT Livros.codigo, Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id AND Livros.Nome LIKE '"+nome+"' ORDER BY Livros.Nome")
                 linha = cursor.fetchone()
                 if not linha:
                     messagebox.showinfo('Remover Livros','Não há livros cadastrados')
+                    self.Tela_Remove_Livro.focus()
+                    self.txt_nome_livro.focus_set()
                     return
-                '''liv=0
-                aut=0
-                val=8
-                while linha:
-                    #print(linha)
-                    #print (len(linha[0]))
-                    if len(linha[0]) > liv:
-                        liv = len(linha[0])
-                    if len(linha[1]) > aut:
-                        aut = len(linha[1])   
-                    linha = cursor.fetchone()
-                #print(aut)
-                liv = liv + 2
-                aut = aut + 2'''
                 self.tv.delete(*self.tv.get_children())
                 cursor.scroll(mode='first')
                 linha = cursor.fetchone()
@@ -775,73 +777,149 @@ class Remov_Livro:
                     #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                     self.tv.insert('','end', values=linha)
                     linha = cursor.fetchone()
-                cursor.scroll(mode='first')
-                linha = cursor.fetchone()
-                rem = input('\n\nGostaria mesmo de remover o Livro?: ')
-                if rem=='s' or rem=='S':
-                    #cursor = conexao.cursor()
-                    cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nome+"'")
-                    linha = cursor.fetchone()
-                    CodigoLivro = linha[0]
-                    cursor.execute("SELECT Id FROM Autorias WHERE Codigo="+str(CodigoLivro))
-                    linha   = cursor.fetchone()
-                    idAutor = linha[0]
-                    cursor.execute("DELETE FROM Autorias WHERE Id="     + str(idAutor))
-                    cursor.execute("DELETE FROM Livros   WHERE Codigo=" + str(CodigoLivro))
-                    self.BD.conexao.commit ()
-                    messagebox.showinfo('Info','Livro removido com sucesso')
-                else:
-                    linha = ''
-                    return
         except cx_Oracle.DataError as err:
-            messagebox.showerror('Erro DB','DataBase error: '+\
-                + str((err))+', ' +str(sys.exc_info()[0]))
+            messagebox.showerror('Erro DB','DataBase error: '+str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Cad_Autor.focus()
         except cx_Oracle.DatabaseError as err:
             error, = err.args
-            messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
-                 str(error.code))
-            messagebox.showerror('Erro DB','Oracle-Error-Message:'+\
-                str(error.message))
-            #messagebox.showerror('Erro DB','DataBase error: {0}.
-            # format('+str(err)+'))' + str(sys.exc_info()[0]))
+            messagebox.showerror('Erro DB','Oracle-Error-Code:'+str(error.code))
+            messagebox.showerror('Erro DB','Oracle-Error-Message:'+str(error.message))
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
             if error.code == 1400:
                 messagebox.showerror('Erro DB','Você deve inserir um nome '+\
                     'para o Livro, não pode ser em branco. Local: ' \
                         +str(stack[0].function)+', '+ str(stack[1].function))
-                self.Tela_Cad_Autor.focus()
-                self.txt_Nome_Autor.focus_set()
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
                 return
             elif error.code == 1:
                 messagebox.showerror('Erro DB','Livro já cadastrado')
-                self.Tela_Cad_Autor.focus()
-                self.txt_Nome_Autor.delete(first=0, last='end') 
+                self.txt_nome_livro.delete(first=0, last='end') 
                 # outra sintax: (0, 'end') onde o 0 representa o primeiro
                 #caracter
-                self.txt_Nome_Autor.focus_set()
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
                 return
             elif error.code == 936:
                 messagebox.showerror('Erro DB','Erro de Sintax, favor '+\
                     'verificar código' + str(stack[1].function))
-                self.Tela_Cad_Autor.focus()
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
             elif error.code == 933:
                 messagebox.showerror('Erro DB','Favor usar "." ao invés de'+\
                     ' "," nos valores numéricos decimais')
-                self.Tela_Cad_Autor.focus()
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
             elif error.code == 904:
                 messagebox.showerror('Erro DB','Campo não encontrado na'+\
                     ' tabela')
-                self.Tela_Cad_Autor.focus()
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
         except KeyError:
             messagebox.showerror('Erro DB','Erro de Sintax, favor verificar código', stack[1].function)
-            self.Tela_Remove_Livro
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
         except:
             raise
             messagebox.showerror('Erro DB','DataBase error: ' + str(sys.exc_info()[0]))
             self.Tela_Cad_Autor.focus()
         else:
+            pass
+
+    def remova_livro (self):
+        #rem = 'N'
+        try:
+            selec = self.tv.selection()[0]
+            valores = self.tv.item(selec, 'values')
+            if (self.tv.selection() == '') or (self.tv.selection == None):
+                print('Nada')
+            else:
+                print(valores)
+                print('selecionado')
+                print(valores[1]   )
+            nome1 = valores[1]
+            #cursor=conexao.cursor()
+            cursor = self.BD.conexao.cursor()
+            #nome = livro
+            #cursor.scroll(mode='first')
+            #linha = cursor.fetchone()
+            rem = messagebox.askyesno('Remover Livro','Gostaria mesmo de remover o Livro?: ')
+            if rem == YES:
+                #cursor = conexao.cursor()
+                cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nome1+"'")
+                linha = cursor.fetchone()
+                CodigoLivro = linha[0]
+                cursor.execute("SELECT Id FROM Autorias WHERE Codigo="+str(CodigoLivro))
+                linha   = cursor.fetchone()
+                idAutor = linha[0]
+                cursor.execute("DELETE FROM Autorias WHERE Id="+str(idAutor)+" AND codigo="+str(CodigoLivro))
+                cursor.execute("DELETE FROM Livros   WHERE Codigo=" + str(CodigoLivro))
+                self.BD.conexao.commit ()
+                #messagebox.showinfo('Info','Livro removido com sucesso')
+                #return
+            else:
+                linha = ''
+                return
+        except cx_Oracle.DataError as err:
+            messagebox.showerror('Erro DB','DataBase error: '+ str((err))+', ' +str(sys.exc_info()[0]))
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
+        except cx_Oracle.DatabaseError as err:
+            error, = err.args
+            messagebox.showerror('Erro DB','Oracle-Error-Code:'+ str(error.code))
+            messagebox.showerror('Erro DB','Oracle-Error-Message:'+ str(error.message))
+            #messagebox.showerror('Erro DB','DataBase error: {0}.
+            # format('+str(err)+'))' + str(sys.exc_info()[0]))
+
+            if error.code == 1400:
+                messagebox.showerror('Erro DB','Você deve inserir um nome para o Livro, não pode ser em branco. Local: '+str(stack[0].function)+', '+ str(stack[1].function))
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+                return
+            elif error.code == 1:
+                messagebox.showerror('Erro DB','Livro já cadastrado')
+                self.txt_nome_livro.delete(first=0, last='end')
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+                # outra sintax: (0, 'end') onde o 0 representa o primeiro
+                #caracter
+                return
+            elif error.code == 936:
+                messagebox.showerror('Erro DB','Erro de Sintax, favor '+\
+                    'verificar código' + str(stack[1].function))
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+            elif error.code == 933:
+                messagebox.showerror('Erro DB','Favor usar "." ao invés de'+\
+                    ' "," nos valores numéricos decimais')
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+            elif error.code == 904:
+                messagebox.showerror('Erro DB','Campo não encontrado na'+\
+                    ' tabela')
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
+        except KeyError:
+            messagebox.showerror('Erro DB','Erro de Sintax, favor verificar código', stack[1].function)
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
+        except IndexError:
+            messagebox.showerror(title='Erro', message='Favor selecionar o item para deleção.')
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
+            return
+        except:
+            messagebox.showerror('Erro DB','DataBase error: ' + str(sys.exc_info()[0]))
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
+        else:
             messagebox.showinfo('Info','Livro removido com sucesso')
-            self.Tela_Remove_Livro.destroy()
+            self.tv.delete(*self.tv.get_children())
+            self.Tela_Remove_Livro.focus()
+            self.txt_nome_livro.focus_set()
 
 ##############################################################################
 class Listar_Livros:
@@ -877,7 +955,7 @@ class Listar_Livros:
         #self.tv.heading('Meses', text='M. Trabalhados')
         #self.tv.heading('Dias', text='Dias/Férias')
         #self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack( padx=10, pady=10)
 
         self.liste_livros()
     
@@ -991,19 +1069,19 @@ class Listar_Livros_Ate:
         #self.tv.heading('Meses', text='M. Trabalhados')
         #self.tv.heading('Dias', text='Dias/Férias')
         #self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack( padx=10, pady=10)
         search_Frame = LabelFrame(self.Tela_Lista_Ate, text='Listar:')
         search_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
         lbl_Valor = Label(search_Frame,text='Valor:')
-        lbl_Valor.pack(side=LEFT)
-        txt_valor_apartir = Entry(search_Frame)
-        txt_valor_apartir.pack(side=LEFT)
+        lbl_Valor.pack(side=LEFT, padx=5, pady=5)
+        self.txt_valor_ate = Entry(search_Frame)
+        self.txt_valor_ate.pack(side=LEFT, padx=5, pady=5)
         btn_Cancelar = Button(search_Frame, text='Cancelar', command=self.Tela_Lista_Ate.destroy)
         btn_Cancelar.pack(side=RIGHT, padx=5, pady=5)
-        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_ate(txt_valor_apartir.get()))
+        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_ate(self.txt_valor_ate.get()))
         btn_Listar.pack(side=RIGHT, padx=5, pady=5)
         self.valor = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
-        txt_valor_apartir.focus_set()
+        self.txt_valor_ate.focus_set()
         #print(self.valor)
         if self.valor == None:
             messagebox.showinfo('Erro','Você deve inserir um nome '+\
@@ -1023,17 +1101,12 @@ class Listar_Livros_Ate:
                 self.Tela_Lista_Ate.destroy()
                 return
         except cx_Oracle.DataError as err:
-            messagebox.showerror('Erro DB','DataBase error: '+\
-                + str((err))+', ' +str(sys.exc_info()[0]))
+            messagebox.showerror('Erro DB','DataBase error: '+str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Ate.focus()
         except cx_Oracle.DatabaseError as err:
             error, = err.args
-            messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
-                 str(error.code))
-            messagebox.showerror('Erro DB','Oracle-Error-Message:'+\
-                str(error.message))
-            #messagebox.showerror('Erro DB','DataBase error: {0}.
-            # format('+str(err)+'))' + str(sys.exc_info()[0]))
+            messagebox.showerror('Erro DB','Oracle-Error-Code:'+str(error.code))
+            messagebox.showerror('Erro DB','Oracle-Error-Message:'+str(error.message))
             if error.code == 1400:
                 messagebox.showerror('Erro DB','Você deve inserir um nome '+\
                     'para o Livro, não pode ser em branco. Local: ' \
@@ -1086,7 +1159,9 @@ class Listar_Livros_Ate:
             while linha:
                 #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                 self.tv.insert('','end', values=linha)
-                linha = cursor.fetchone()    
+                linha = cursor.fetchone()
+            self.txt_valor_ate.delete(first=0, last='end')
+            self.txt_valor_ate.focus_set()
 
 ##############################################################################
 class Listar_Livros_Entre:
@@ -1121,24 +1196,24 @@ class Listar_Livros_Entre:
         #self.tv.heading('Meses', text='M. Trabalhados')
         #self.tv.heading('Dias', text='Dias/Férias')
         #self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack(fill='both', expand='yes', padx=10, pady=10)
         search_Frame = LabelFrame(self.Tela_Lista_Entre, text='Listar:')
         search_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
-        lbl_Valor1 = Label(search_Frame,text='Deor:')
+        lbl_Valor1 = Label(search_Frame,text='De:')
         lbl_Valor1.pack(side=LEFT, padx=5, pady=5)
-        txt_valor_apartir = Entry(search_Frame)
-        txt_valor_apartir.pack(side=LEFT, padx=5, pady=5)
+        self.txt_valor_apartir = Entry(search_Frame)
+        self.txt_valor_apartir.pack(side=LEFT, padx=5, pady=5)
         lbl_Valor2 = Label(search_Frame,text='Até:')
         lbl_Valor2.pack(side=LEFT, padx=5, pady=5)
-        txt_valor_ate = Entry(search_Frame)
-        txt_valor_ate.pack(side=LEFT)
+        self.txt_valor_ate = Entry(search_Frame)
+        self.txt_valor_ate.pack(side=LEFT)
         btn_Cancelar = Button(search_Frame, text='Cancelar', command=self.Tela_Lista_Entre.destroy)
         btn_Cancelar.pack(side=RIGHT, padx=5, pady=5)
-        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_entre(txt_valor_apartir.get(), txt_valor_ate.get()))
+        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_entre(self.txt_valor_apartir.get(), self.txt_valor_ate.get()))
         btn_Listar.pack(side=RIGHT, padx=5, pady=5)
         self.valor1 = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
         self.valor2 = askstring('Livros', 'até qual valor?: ')
-        txt_valor_apartir.focus_set()
+        self.txt_valor_apartir.focus_set()
         if (self.valor1) == None or (self.valor2) == None:
             messagebox.showinfo('Erro','Você deve inserir uma faixa de '+\
                 'valor para o Livro, não pode ser em branco.')
@@ -1156,7 +1231,11 @@ class Listar_Livros_Entre:
             if not linha:
                 messagebox.showinfo('Livros', 'Não há Livros cadastrados'+\
                     ' nesta faixa de valor.')
-                self.Tela_Lista_Entre.destroy()
+                self.txt_valor_apartir.delete(first=0, last='end')
+                self.txt_valor_ate.delete(first=0, last='end')
+                self.tv.delete(*self.tv.get_children())
+                self.Tela_Lista_Entre.focus()
+                self.txt_valor_apartir.focus_set()
                 return
         except cx_Oracle.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
@@ -1226,7 +1305,11 @@ class Listar_Livros_Entre:
             while linha:
                 #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                 self.tv.insert('','end', values=linha)
-                linha = cursor.fetchone()    
+                linha = cursor.fetchone()
+            self.txt_valor_apartir.delete(first=0, last='end')
+            self.txt_valor_ate.delete(first=0, last='end')
+            self.Tela_Lista_Entre.focus()
+            self.txt_valor_apartir.focus_set()
 
 ##############################################################################
 class Listar_Livros_Apartir:
@@ -1236,7 +1319,7 @@ class Listar_Livros_Apartir:
     def __init__(self) -> None:
         #global Tela_Lista_Func, tv
         self.Tela_Lista_Apartir = Toplevel()
-        self.Tela_Lista_Apartir.title('Listar Livros até valor$')
+        self.Tela_Lista_Apartir.title('Listar Livros a partir do valor$')
         #self.Tela_Lista_Func.geometry('450x280')
         centralizar_window(self.Tela_Lista_Apartir)
         self.Tela_Lista_Apartir.focus()
@@ -1262,23 +1345,26 @@ class Listar_Livros_Apartir:
         #self.tv.heading('Meses', text='M. Trabalhados')
         #self.tv.heading('Dias', text='Dias/Férias')
         #self.tv.heading('Dep', text='Dependentes')
-        self.tv.pack()
+        self.tv.pack(fill='both', expand='yes', padx=10, pady=10)
         search_Frame = LabelFrame(self.Tela_Lista_Apartir, text='Listar:')
         search_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
         lbl_Valor = Label(search_Frame,text='Valor:')
-        lbl_Valor.pack(side=LEFT)
-        txt_valor_apartir = Entry(search_Frame)
-        txt_valor_apartir.pack(side=LEFT)
+        lbl_Valor.pack(side=LEFT, padx=5, pady=5)
+        self.txt_valor_apartir = Entry(search_Frame)
+        self.txt_valor_apartir.pack(side=LEFT, padx=5, pady=5)
         btn_Cancelar = Button(search_Frame, text='Cancelar', command=self.Tela_Lista_Apartir.destroy)
         btn_Cancelar.pack(side=RIGHT, padx=5, pady=5)
-        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_apartir(txt_valor_apartir.get()))
+        btn_Listar = Button(search_Frame, text='Listar', command=lambda: self.liste_livros_apartir(self.txt_valor_apartir.get()))
         btn_Listar.pack(side=RIGHT, padx=5, pady=5)
         self.valor = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
-        txt_valor_apartir.focus_set()
-        print(self.valor)
+        self.txt_valor_apartir.focus_set()
+        #print(self.valor)
         if self.valor == None:
-            messagebox.showinfo('Erro','Você deve inserir um nome para o Livro, não pode ser em branco.')
-            self.Tela_Lista_Apartir.destroy()
+            messagebox.showinfo('Erro','Você deve inserir um valor, não pode ser em branco.')
+            self.txt_valor_apartir.delete(first=0, last='end')
+            self.Tela_Lista_Apartir.focus()
+            self.txt_valor_apartir.focus_set()
+
         else:
             self.liste_livros_apartir(self.valor)
         
@@ -1314,9 +1400,12 @@ class Listar_Livros_Apartir:
                 self.Tela_Lista_Ate.focus()
                 return
             elif error.code == 936:
-                messagebox.showerror('Erro DB','Erro de Sintax, favor '+\
-                    'verificar código' + str(stack[0].function))
-                self.Tela_Lista_Ate.destroy()
+                messagebox.showerror('Erro DB','Erro de Sintax, ou campo'+\
+                 'em branco favor verificar código' + str(stack[0].function))
+                self.txt_valor_apartir.delete(first=0, last='end')
+                self.Tela_Lista_Apartir.focus()
+                self.txt_valor_apartir.focus_set()
+
             elif error.code == 933:
                 messagebox.showerror('Erro DB','Favor usar "." ao invés de'+\
                     ' "," nos valores numéricos decimais')
@@ -1327,7 +1416,7 @@ class Listar_Livros_Apartir:
                     ' tabela')
                 self.Tela_Lista_Ate.focus()
         except KeyError:
-            messagebox.showerror('Erro DB','Erro de Sintax, favor verificar código', stack[1].function)
+            messagebox.showerror('Erro DB','Erro de Sintax, favor verificar código'+str(stack[1].function))
             self.Tela_Lista_Ate.focus()
         except:
             raise
@@ -1338,24 +1427,15 @@ class Listar_Livros_Apartir:
             aut=0
             val=8
             self.tv.delete(*self.tv.get_children())
-            '''while linha:
-                #print(linha)
-                #print (len(linha[0]))
-                if len(linha[0]) > liv:
-                    liv = len(linha[0])
-                if len(linha[1]) > aut:
-                    aut = len(linha[1])   
-                linha = cursor.fetchone()
-            #print(aut)
-            #liv = liv + 2
-            #aut = aut + 2'''
+            
             cursor.scroll(mode='first')
             linha = cursor.fetchone()
             #print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
             while linha:
                 #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                 self.tv.insert('','end', values=linha)
-                linha = cursor.fetchone()    
+                linha = cursor.fetchone()
+              
 
 ##############################################################################
 class Programa(object):
