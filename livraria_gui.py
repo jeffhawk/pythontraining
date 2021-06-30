@@ -18,8 +18,8 @@ Estou tentando manter o estilo seguindo o guia do Python:
 https://www.python.org/dev/peps/pep-0008/#maximum-line-length
 '''
 #############################################################################
+
 # Importando as bibliotecas
-from GASRH import teste
 import os
 import sys
 import tkinter as tk
@@ -47,10 +47,11 @@ import subprocess
 # Declaração de variáveis globais
 biblio = False
 caminho = sys.path[0] + '\InstantClient'
-biblios = ['pip','cx_Oracle','setuptools','pywin32']
+BIBLIOS = ['pip','cx_Oracle','setuptools','pywin32', 'pillow']
 atua = ''
 i=0
-ico = sys.path[0] + './images/livraria1.png'
+ICO = sys.path[0] + './images/biblioteca.png'
+IMG = sys.path[0] + '/images/lendo-um-livro.png'
 stack = inspect.stack()
 
 #Variável de controle para saber se está tudo ok e seguir com a execução
@@ -79,6 +80,10 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         from win32 import *
         import setuptools
         import pip
+        import PIL
+        from PIL import Image
+        from PIL import ImageQt
+        from PIL import ImageTk
 
         #====================================================================
         #Aqui estou usando a funcionalidade da biblioteca
@@ -101,7 +106,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
                 import pip
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', \
                     '--upgrade', 'pip'])
-                for i in biblios:
+                for i in BIBLIOS:
                     subprocess.check_call([sys.executable, '-m', 'pip', \
                         'install', i])
                 messagebox.showinfo('Bibliotecas','Instalação concluída!')
@@ -137,6 +142,10 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         import setuptools
         import cx_Oracle
         import inspect
+        import PIL
+        from PIL import Image
+        from PIL import ImageQt
+        from PIL import ImageTk
         biblio=True     # Este comando encerra o 'while True'
 print(atua)
 if atua == YES:
@@ -183,7 +192,6 @@ class Conecta_Bd: #Definindo a conexão ao banco de dados
         self.conexao = cx_Oracle.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
 
     def connection(self):
-        #global conexao
         servidor = 'localhost/xe'
         usuario  = 'system'
         senha    = 'oracle'
@@ -225,10 +233,9 @@ class Conecta_Bd: #Definindo a conexão ao banco de dados
 
 ##############################################################################
 class Cad_Autor:
-
+    BD = Conecta_Bd()
     def __init__(self):
         
-        T = Conecta_Bd()
         #global Tela_Cad_User, txt_Nome_User, txt_Senha_User
         self.Tela_Cad_Autor = Toplevel()
         self.Tela_Cad_Autor.title('Cadastro de Autores')
@@ -271,13 +278,11 @@ class Cad_Autor:
     def cadastrar_autor(self, autor):
         #stack = inspect.stack()
         try:
-            Conecta_Bd()
-            T = Conecta_Bd()
-            cursor = T.conexao.cursor()
+            cursor = self.BD.conexao.cursor()
             nome   = autor
             cursor.execute("INSERT INTO Autores (Id,Nome) VALUES \
                 (seqAutores.nextval,'"+nome+"')")
-            T.conexao.commit()
+            self.BD.conexao.commit()
         except cx_Oracle.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
@@ -333,6 +338,7 @@ class Cad_Autor:
 
 ##############################################################################
 class Listar_Aut:
+    BD = Conecta_Bd()
     
     def __init__(self) -> None:
         #global Tela_Lista_Func, tv
@@ -368,10 +374,8 @@ class Listar_Aut:
         self.listar_autor()
         
     def listar_autor(self):
-        Conecta_Bd()
         try:
-            BD = Conecta_Bd()
-            cursor = BD.conexao.cursor()
+            cursor = self.BD.conexao.cursor()
             cursor.execute("SELECT * FROM Autores ORDER BY Autores.Nome")
 
             linha = cursor.fetchone() # linha(1,'Arthur')
@@ -446,7 +450,7 @@ class Listar_Aut:
         
 ##############################################################################
 class Remov_Autor:
-    
+    BD = Conecta_Bd()
     def __init__(self) -> None:
         #global Tela_Lista_Func, tv
         fonte = ("Verdana", "8",'bold')
@@ -477,10 +481,9 @@ class Remov_Autor:
 
     #=========================================================================
     def remover_autor(self, autor):
-        stack = inspect.stack()
+        #stack = inspect.stack()
         try:
-            T = Conecta_Bd()
-            cursor = T.conexao.cursor()
+            cursor = self.BD.conexao.cursor()
             nome   = autor
             if not nome:
                 messagebox.showinfo('Info','Você deve inserir um nome para o Autor, não pode ser em branco')
@@ -488,7 +491,7 @@ class Remov_Autor:
                 self.txtIdAutor.focus_set()
                 return
             cursor.execute("SELECT Id FROM Autores WHERE Nome='"+nome+"'")
-            T.conexao.commit ()
+            self.BD.conexao.commit ()
             linha = cursor.fetchone()
             if not linha:
                 messagebox.showinfo('Info','Autor inexistente')
@@ -500,7 +503,7 @@ class Remov_Autor:
                 op = messagebox.askyesno('Remover', 'Você deseja realmente remover o autor ' +nome+ ' ?')
                 if op == YES:
                     cursor.execute("DELETE FROM Autores WHERE Nome='"+nome+"'")
-                    T.conexao.commit()
+                    self.BD.conexao.commit()
                     messagebox.showinfo('Info','Autor removido com sucesso')
                 self.Tela_Remov_Autor.destroy()
         except cx_Oracle.DataError as err:
@@ -536,8 +539,8 @@ class Remov_Autor:
 
 ##############################################################################
 class Cad_Livro:
+    BD = Conecta_Bd()
     def __init__(self):
-        T = Conecta_Bd()
         #global Tela_Cad_User, txt_Nome_User, txt_Senha_User
         self.Tela_Cad_Livro = Toplevel()
         self.Tela_Cad_Livro.title('Cadastro de Livros')
@@ -594,9 +597,7 @@ class Cad_Livro:
     #========================================================================
     def cadastrar_livro(self, livro, autor, valor):
         try:
-            Conecta_Bd()
-            T = Conecta_Bd()
-            cursor    = T.conexao.cursor()
+            cursor    = self.BD.conexao.cursor()
             nomeLivro = livro
             #verificaLivro(nomeLivro)
             if nomeLivro == '':
@@ -630,7 +631,7 @@ class Cad_Livro:
                     cursor.execute("INSERT INTO Livros (Codigo,Nome,Preco)\
                          VALUES (seqLivros.nextval,'"+nomeLivro+"',"\
                              +str(precoLivro)+")")
-                    T.conexao.commit()
+                    self.BD.conexao.commit()
                 except cx_Oracle.DataError as err:
                     messagebox.showerror('Erro DB','DataBase error: '\
                         .format(err), sys.exc_info()[0])
@@ -667,24 +668,79 @@ class Cad_Livro:
                     CodigoLivro = linha[0]
                     
                     cursor.execute("INSERT INTO Autorias (Id,Codigo) VALUES ("+str(idAutor)+","+str(CodigoLivro)+")")
-                    T.conexao.commit ()
+                    self.BD.conexao.commit ()
                     messagebox.showinfo('Info','Livro cadastrado com sucesso')
                     self.Tela_Cad_Livro.destroy()
 
 ##############################################################################
 class Remov_Livro:
+    BD = Conecta_Bd()
 
     def __init__(self) -> None:
-        pass
+        #global Tela_Lista_Func, tv
+        self.Tela_Remove_Livro = Toplevel()
+        self.Tela_Remove_Livro.title('Remover Livros')
+        #self.Tela_Lista_Func.geometry('450x280')
+        centralizar_window(self.Tela_Remove_Livro)
+        self.Tela_Remove_Livro.focus()
+        #Frame de Busca
+        search_Frame = LabelFrame(self.Tela_Remove_Livro, text='Buscar:')
+        search_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
+        lbl_nome_livro = Label(search_Frame,text='Livro:')
+        lbl_nome_livro.pack(side=LEFT, padx=5, pady=5)
+        self.txt_nome_livro = Entry(search_Frame)
+        self.txt_nome_livro.pack(side=LEFT, padx=5, pady=5)
+        btn_buscar = Button(search_Frame, text='Listar', command=lambda: self.remova_livro(self.txt_nome_livro.get()))
+        btn_buscar.pack(side=RIGHT, padx=5, pady=5)
+        #self.nome_livro = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
+        self.txt_nome_livro.focus_set()
 
-    def removaLivro (self):
+        self.Frame_Livros = LabelFrame(self.Tela_Remove_Livro, text='Livros:')
+        self.Frame_Livros.pack(fill='both', expand='yes', padx=10, pady=10)
+        self.tv = ttk.Treeview(self.Frame_Livros, columns=('ID', 'Livro', 'Autor', 'Valor'), show='headings' )
+        ### 'Setor', 'Salario_Bruto', 'Bonus', 'Meses', 'Dias','Dep'), show='headings')
+        self.tv.column('ID', minwidth=0, width=20)
+        self.tv.column('Livro', minwidth=0, width=120)
+        self.tv.column('Autor', minwidth=0, width=90)
+        self.tv.column('Valor', minwidth=0, width=50)
+        #self.tv.column('Bonus', minwidth=0, width=50)
+        #self.tv.column('Meses', minwidth=0, width=80)
+        #self.tv.column('Dias', minwidth=0, width=60)
+        #self.tv.column('Dep', minwidth=0, width=60)
+        self.tv.heading('ID', text='ID')
+        self.tv.heading('Livro', text='Nome Livro')
+        self.tv.heading('Autor', text='Autor')
+        self.tv.heading('Valor', text='Valor')
+        #self.tv.heading('Bonus', text='Bonus')
+        #self.tv.heading('Meses', text='M. Trabalhados')
+        #self.tv.heading('Dias', text='Dias/Férias')
+        #self.tv.heading('Dep', text='Dependentes')
+        self.tv.pack()
+
+        action_Frame = LabelFrame(self.Tela_Remove_Livro, text='Ações:')
+        action_Frame.pack(fill='both', expand='yes', padx=10, pady=10)
+        btn_Cancelar = Button(action_Frame, text='Cancelar', command=self.Tela_Remove_Livro.destroy)
+        btn_Cancelar.pack(side=RIGHT, padx=5, pady=5)
+
+        '''
+        #print(self.valor)
+        if self.nome_livro == None:
+            messagebox.showinfo('Erro','Você deve inserir um nome '+\
+                    'para o Livro, não pode ser em branco.')
+            self.Tela_Remove_Livro.destroy()
+        else:
+            self.remova_livro(self.nome_livro)'''
+
+    def remova_livro (self, livro):
         rem = 'N'
         
         try:
-            cursor = conexao.cursor()
-            nome = input('\nNome do livro? ')
+            cursor = self.BD.conexao.cursor()
+            nome = livro
             if not nome:
                 messagebox.showinfo('Info','Favor entrar com o nome do Livro, não pode ser em branco!')
+                self.Tela_Remove_Livro.focus()
+                self.txt_nome_livro.focus_set()
                 return
             cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nome+"'")
             linha = cursor.fetchone()    
@@ -692,12 +748,12 @@ class Remov_Livro:
                 messagebox.showinfo('Info','Livro não encontrado')
             else:
                 #cursor=conexao.cursor()
-                cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id AND Livros.Nome='"+nome+"' ORDER BY Livros.Nome")
+                cursor.execute("SELECT Livros. codigo, Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autorias, Autores WHERE Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id AND Livros.Nome='"+nome+"' ORDER BY Livros.Nome")
                 linha = cursor.fetchone()
                 if not linha:
-                    print ('Não há livros cadastrados')
+                    messagebox.showinfo('Remover Livros','Não há livros cadastrados')
                     return
-                liv=0
+                '''liv=0
                 aut=0
                 val=8
                 while linha:
@@ -710,12 +766,14 @@ class Remov_Livro:
                     linha = cursor.fetchone()
                 #print(aut)
                 liv = liv + 2
-                aut = aut + 2
+                aut = aut + 2'''
+                self.tv.delete(*self.tv.get_children())
                 cursor.scroll(mode='first')
                 linha = cursor.fetchone()
-                print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
+                #print('|',end=''),print(' LIVRO '.center(liv,'*') + '|' + ' AUTOR '.center(aut,'*') + '|' +' VALOR '.center(val,'*'),end=''), print('|')
                 while linha:
-                    print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
+                    #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
+                    self.tv.insert('','end', values=linha)
                     linha = cursor.fetchone()
                 cursor.scroll(mode='first')
                 linha = cursor.fetchone()
@@ -730,7 +788,7 @@ class Remov_Livro:
                     idAutor = linha[0]
                     cursor.execute("DELETE FROM Autorias WHERE Id="     + str(idAutor))
                     cursor.execute("DELETE FROM Livros   WHERE Codigo=" + str(CodigoLivro))
-                    conexao.commit ()
+                    self.BD.conexao.commit ()
                     messagebox.showinfo('Info','Livro removido com sucesso')
                 else:
                     linha = ''
@@ -776,14 +834,14 @@ class Remov_Livro:
                 self.Tela_Cad_Autor.focus()
         except KeyError:
             messagebox.showerror('Erro DB','Erro de Sintax, favor verificar código', stack[1].function)
-            self.Tela_Cad_Autor.focus()
+            self.Tela_Remove_Livro
         except:
             raise
             messagebox.showerror('Erro DB','DataBase error: ' + str(sys.exc_info()[0]))
             self.Tela_Cad_Autor.focus()
         else:
             messagebox.showinfo('Info','Livro removido com sucesso')
-            self.Tela_Cad_Autor.destroy()
+            self.Tela_Remove_Livro.destroy()
 
 ##############################################################################
 class Listar_Livros:
@@ -946,11 +1004,11 @@ class Listar_Livros_Ate:
         btn_Listar.pack(side=RIGHT, padx=5, pady=5)
         self.valor = askstring('Livros', 'Você gostaria de listar livros à partir de que valor?: ')
         txt_valor_apartir.focus_set()
-        print(self.valor)
+        #print(self.valor)
         if self.valor == None:
             messagebox.showinfo('Erro','Você deve inserir um nome '+\
                     'para o Livro, não pode ser em branco.')
-            self.Tela_Lista_Apartir.destroy()
+            self.Tela_Lista_Ate.destroy()
         else:
             self.liste_livros_ate(self.valor)
         
@@ -1084,7 +1142,7 @@ class Listar_Livros_Entre:
         if (self.valor1) == None or (self.valor2) == None:
             messagebox.showinfo('Erro','Você deve inserir uma faixa de '+\
                 'valor para o Livro, não pode ser em branco.')
-            self.Tela_Lista_Apartir.destroy()
+            self.Tela_Lista_Entre.destroy()
         else:
             self.liste_livros_entre(self.valor1, self.valor2)
 
@@ -1219,8 +1277,7 @@ class Listar_Livros_Apartir:
         txt_valor_apartir.focus_set()
         print(self.valor)
         if self.valor == None:
-            messagebox.showinfo('Erro','Você deve inserir um nome '+\
-                    'para o Livro, não pode ser em branco.')
+            messagebox.showinfo('Erro','Você deve inserir um nome para o Livro, não pode ser em branco.')
             self.Tela_Lista_Apartir.destroy()
         else:
             self.liste_livros_apartir(self.valor)
@@ -1228,10 +1285,7 @@ class Listar_Livros_Apartir:
     def liste_livros_apartir(self, valor): 
         try:
             cursor=self.BD.conexao.cursor()
-            cursor.execute('SELECT Livros.codigo, Livros.Nome, \
-Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE \
-Livros.Preco >= ' + valor + ' AND Livros.Codigo=Autorias.Codigo \
-    AND Autorias.Id=Autores.Id ORDER BY Livros.Preco ASC')
+            cursor.execute('SELECT Livros.codigo, Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco >= ' + valor + ' AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Preco ASC')
             linha = cursor.fetchone()
             if not linha:
                 messagebox.showinfo('Livros', 'Não há Livros cadastrados')
@@ -1314,9 +1368,9 @@ class Programa(object):
         self.Tela_Prin = parent
         self.Tela_Prin.geometry('680x420')
         centralizar_window(self.Tela_Prin)
-        self.Tela_Prin.iconphoto(True, tk.PhotoImage(file=ico))
-        self.Tela_Prin.title('Livraria - PROGRAMA PARA PARA CADASTRAR LIVROS\
- E SEUS AUTORES')
+        self.Tela_Prin.iconphoto(True, tk.PhotoImage(file=ICO))
+        #self.Tela_Prin.iconbitmap(True, ico)
+        self.Tela_Prin.title('Livraria - PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES')
         MenuBar = Menu(self.Tela_Prin)
         self.Tela_Prin.config(menu=MenuBar)
         
@@ -1334,7 +1388,7 @@ class Programa(object):
         #Menu Remover 
         Menu_Rem= Menu(MenuBar, tearoff=0)  
         Menu_Rem.add_command(label='Autor', command=Remov_Autor)
-        Menu_Rem.add_command(label='Livro') 
+        Menu_Rem.add_command(label='Livro', command=Remov_Livro) 
         #Menu_Cad.add_separator()  
         #Menu_Cad.add_command(label="Sair", command=_quit)  
         MenuBar.add_cascade(label='Remover', menu=Menu_Rem)
@@ -1350,7 +1404,7 @@ class Programa(object):
         Menu_Lis1.add_command(label='LISTAR - Livros entre valores', command=Listar_Livros_Entre)
         Menu_Lis1.add_command(label='LISTAR - Livros acima valor', command=Listar_Livros_Apartir)
         Menu_Lis.add_cascade(label='Livros', menu=Menu_Lis1)
-        ##########################################################
+        #=====================================================================
         #Menu Sair
         Menu_Sair= Menu(MenuBar, tearoff=0)  
         #Menu_Cad.add_command(label='Autor')
@@ -1358,7 +1412,17 @@ class Programa(object):
         #Menu_Cad.add_separator()  
         Menu_Sair.add_command(label="Sair", command=self._quit)  
         MenuBar.add_cascade(label='Sair', menu=Menu_Sair)
-        #############################################################
+        #=====================================================================
+
+        meio_frame = Frame(self.Tela_Prin)
+        meio_frame.pack(fill='both', expand='yes', padx=10, pady=10)
+        #load = Image.open(IMG)
+        test = ImageTk.PhotoImage(Image.open(IMG))
+        imagem = Label(meio_frame, image=test)
+        imagem.image = test
+        imagem.pack(fill=BOTH)
+        #=====================================================================
+
         #Barra de Status
         statusbar = tk.Label(self.Tela_Prin, text='Livraria BD + GUI', bd=1, relief=tk.SUNKEN, anchor=tk.W)
         statusbar.pack(side=tk.BOTTOM, fill=tk.X)
