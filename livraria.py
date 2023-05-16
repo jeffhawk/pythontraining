@@ -13,7 +13,7 @@ Também foi utilizado o GUI(Graphical User Interface) Tkinter para desenvolvimen
 
 # Declaração de variáveis globais
 from os import strerror
-
+import sys
 
 global biblio
 global caminho
@@ -24,7 +24,7 @@ i=0
 # Importando as bibliotecas
 # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
 biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
-caminho = 'D:\instantclient-basic-windows.x64-19.11.0.0.0dbru\instantclient_19_11'
+caminho = sys.path[0] + '\instantclient'
 while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
     try: #Inicia as importações
         import win32api

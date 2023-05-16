@@ -46,7 +46,7 @@ import subprocess
 #============================================================================
 # Declaração de variáveis globais
 biblio = False
-caminho = sys.path[0] + '\InstantClient'
+caminho = sys.path[0] + '\instantclient'
 BIBLIOS = ['pip','cx_Oracle','setuptools','pywin32', 'pillow']
 atua = ''
 i=0

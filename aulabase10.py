@@ -31,6 +31,7 @@ except ImportError:
     if atua == 's' or atua == 'S':
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', Py])
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', Oracx])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', termcolor])
         '''if not Py in sys.modules.keys():
             pip.main(['install', Py])
         if not Oracx in sys.modules.keys():

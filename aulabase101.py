@@ -4,7 +4,7 @@ Py = 'PySimpleGUI'
 Oracx = 'cx_Oracle'
 biblio = False
 biblios = ['PySimpleGUI','cx_Oracle','pip','termcolor']
-caminho = 'C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6'
+
 atua = ''
 i=0
 #Importando as bibliotecas
@@ -19,7 +19,9 @@ try:
     import subprocess
     from os import system
     biblio = True
-    os.chdir("C:\\Courses1\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+    caminho = sys.path[0] + '\instantclient'
+    #print(sys.path[0])
+    os.chdir(caminho)
 except ImportError as error1:
     print(f"Error: {0}".format(error1))
     print('Erro ao tentar importar bibliotecas necessárias!!')

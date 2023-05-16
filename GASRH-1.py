@@ -25,6 +25,7 @@ import string
 import subprocess
 import time
 import inspect
+import oracledb
 
 from win32api import MessageBox, MessageBoxEx
 
@@ -33,15 +34,16 @@ global biblio
 global caminho
 global tentativa
 
-biblios = ['pip','cx_Oracle','setuptools','pywin32']
+biblios = ['pip','cx_Oracle','setuptools','pywin32','oracledb']
 atua = ''
 i=0
 biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
 #caminho = 'InstantClient'
+
 fonte_Normal = ("Verdana", "8",'bold')
 fonte_Titulo = ('Arial', 16, 'bold')
 fonte_Texto = ('Times New Roman', 12)
-caminho = 'InstantClient'
+caminho = sys.path[0] + '\instantclient'
 tentativa = 0
 
 #Inicia as importações
@@ -133,9 +135,9 @@ def connection():
     servidor = 'localhost/xe'
     usuario  = 'system'
     senha    = 'oracle'
-    #os.chdir(caminho)
+    os.chdir(caminho)
     try:
-        conexao = cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
+        conexao = oracledb.connect(dsn=servidor,user=usuario,password=senha)#cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
         cursor  = conexao.cursor()
     except cx_Oracle.DataError as err:
                 messagebox.showerror('Erro','DataBase error: ' + str(err))
