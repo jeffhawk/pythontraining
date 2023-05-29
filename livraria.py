@@ -17,14 +17,14 @@ import sys
 
 global biblio
 global caminho
-biblios = ['pip','PySimpleGUI','cx_Oracle','setuptools','termcolor','pywin32']
+biblios = ['pip','PySimpleGUI','oracledb','setuptools','termcolor','pywin32']
 atua = ''
 i=0
 
 # Importando as bibliotecas
 # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
 biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
-caminho = sys.path[0] + '\instantclient'
+caminho = 'C:\instantclient' #sys.path[0] + 
 while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
     try: #Inicia as importações
         import win32api
@@ -35,7 +35,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
         import setuptools
         import string
         import termcolor
-        import cx_Oracle
+        import oracledb
         import pip
         import subprocess
         import time
@@ -64,7 +64,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                 from win32api import GetSystemMetrics
                 import PySimpleGUI as psg
                 import setuptools
-                import cx_Oracle
+                import oracledb
                 import termcolor
                 from termcolor import colored
                 os.chdir(caminho)
@@ -103,7 +103,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
             biblio=True
 
         else:
-            os.chdir("C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")  
+            os.chdir("C:\\instantclient")  
     except:
         print("Unexpected error:", sys.exc_info()[0])
         raise
@@ -121,7 +121,7 @@ def cadastreAutor (conexao):
     try:
         cursor.execute("INSERT INTO Autores (Id,Nome) VALUES (seqAutores.nextval,'"+nome+"')")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         print("Autor repetido")
     else:
         print("Autor cadastrado com sucesso")
@@ -139,7 +139,7 @@ def removaAutor (conexao):
             cursor.execute("DELETE FROM Autores WHERE Nome='"+nome+"'")
             conexao.commit ()
             print("Autor removido com sucesso")
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         #print("DataBase error: {0}".format(err), sys.exc_info()[0])
         print('O autor tem livros cadastrados, favor remover os livros primeiro!')
     
@@ -188,7 +188,7 @@ def cadastreLivro (conexao):
             try:
                 cursor.execute("INSERT INTO Livros (Codigo,Nome,Preco) VALUES (seqLivros.nextval,'"+nomeLivro+"',"+str(precoLivro)+")")
                 conexao.commit ()
-            except cx_Oracle.DatabaseError:
+            except oracledb.DatabaseError:
                 print("Livro repetido")
             else:
                 cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nomeLivro+"'")
@@ -454,9 +454,9 @@ def connection():
     usuario  = 'system'
     senha    = 'oracle'
     try:
-        conexao = cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
+        conexao = oracledb.connect(dsn=servidor,user=usuario,password=senha)
         cursor  = conexao.cursor()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         print ("Erro de conexão com o BD\n")
         return
     '''
@@ -493,31 +493,31 @@ def connection():
     try:
         cursor.execute("CREATE SEQUENCE seqAutores START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a sequência já existe
 
     try:
         cursor.execute("CREATE TABLE Autores (Id NUMBER(3) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL)")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE SEQUENCE seqLivros START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE TABLE Livros (Codigo NUMBER(5) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL, Preco NUMBER(5,2) NOT NULL)")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE TABLE Autorias (Id NUMBER(3), Codigo NUMBER(5), FOREIGN KEY (Id) REFERENCES Autores(Id), FOREIGN KEY (Codigo) REFERENCES Livros(Codigo))")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
 def programa():

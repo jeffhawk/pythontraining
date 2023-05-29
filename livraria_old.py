@@ -3,8 +3,9 @@ try:
     import os
     from os import system
     from os import sys
+    import oracledb
     os.chdir("C:")
-    os.chdir("C:\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6")
+    os.chdir("C:\instantclient")
     '''os.chdir("C:\\Courses\\Puc\\sqldeveloper-20.4.1.407.0006-x64\\sqldeveloper")'''
     import cx_Oracle
 except OSError as err:
@@ -21,7 +22,7 @@ def cadastreAutor (conexao):
         cursor.execute("INSERT INTO Autores (Id,Nome) VALUES (seqAutores.nextval,'"+nome+"')")
         conexao.commit()
         print("Autor cadastrado com sucesso")
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         print("Autor repetido")
 
 
@@ -62,7 +63,7 @@ def cadastreLivro (conexao):
             try:
                 cursor.execute("INSERT INTO Livros (Codigo,Nome,Preco) VALUES (seqLivros.nextval,'"+nomeLivro+"',"+str(precoLivro)+")")
                 conexao.commit ()
-            except cx_Oracle.DatabaseError:
+            except oracledb.DatabaseError:
                 print("Livro repetido")
             else:
                 cursor.execute("SELECT Codigo FROM Livros WHERE Nome='"+nomeLivro+"'")
@@ -118,9 +119,9 @@ def main():
     senha    = 'oracle'
 
     try:
-        conexao = cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
+        conexao = oracledb.connect(dsn=servidor,user=usuario,password=senha)
         cursor  = conexao.cursor()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         print ("Erro de conexão com o BD\n")
         return
     '''
@@ -157,31 +158,31 @@ def main():
     try:
         cursor.execute("CREATE SEQUENCE seqAutores START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a sequência já existe
 
     try:
         cursor.execute("CREATE TABLE Autores (Id NUMBER(3) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL)")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE SEQUENCE seqLivros START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE TABLE Livros (Codigo NUMBER(5) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL, Preco NUMBER(5,2) NOT NULL)")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE TABLE Autorias (Id NUMBER(3), Codigo NUMBER(5), FOREIGN KEY (Id) REFERENCES Autores(Id), FOREIGN KEY (Codigo) REFERENCES Livros(Codigo))")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     fimDoPrograma=False

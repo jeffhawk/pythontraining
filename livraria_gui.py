@@ -41,13 +41,14 @@ import inspect
 from functools import partial
 import string
 import subprocess
+import oracledb
 
 
 #============================================================================
 # Declaração de variáveis globais
 biblio = False
-caminho = sys.path[0] + '\instantclient'
-BIBLIOS = ['pip','cx_Oracle','setuptools','pywin32', 'pillow']
+caminho = 'C:\instantclient' #sys.path[0] +
+BIBLIOS = ['pip','oracledb','setuptools','pywin32', 'pillow']
 atua = ''
 i=0
 ICO = sys.path[0] + './images/biblioteca.png'
@@ -78,7 +79,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         # Importando as bibliotecas
         # Verifica se existe as bibliotecas, caso contrário pergunta se quer 
         # instala-las
-        import cx_Oracle
+        import oracledb
         import win32
         from win32 import *
         import setuptools
@@ -143,7 +144,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         # Cláusula 'else' do 'try/except',  só é executada se
         # não ocorreu nenhum erro
         import setuptools
-        import cx_Oracle
+        import oracledb
         import inspect
         import PIL
         from PIL import Image
@@ -192,46 +193,46 @@ class Conecta_Bd: #Definindo a conexão ao banco de dados
         self.servidor = 'localhost/xe'
         self.usuario  = 'system'
         self.senha    = 'oracle'
-        self.conexao = cx_Oracle.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
+        self.conexao = oracledb.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
 
     def connection(self):
         servidor = 'localhost/xe'
         usuario  = 'system'
         senha    = 'oracle'
         try:
-            self.conexao = cx_Oracle.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
+            self.conexao = oracledb.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
             cursor  = self.conexao.cursor()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             messagebox.showerror('Erro','Erro de conexão com o BD')
             return
         try:
             cursor.execute('CREATE SEQUENCE seqAutores START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE')
             self.conexao.commit()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             pass # ignora, pois a sequência já existe
 
         try:
             cursor.execute('CREATE TABLE Autores (Id NUMBER(3) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL)')
             self.conexao.commit()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute('CREATE SEQUENCE seqLivros START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE')
             self.conexao.commit()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute('CREATE TABLE Livros (Codigo NUMBER(5) PRIMARY KEY, Nome NVARCHAR2(50) UNIQUE NOT NULL, Preco NUMBER(5,2) NOT NULL)')
             self.conexao.commit()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             pass # ignora, pois a tabela já existe
 
         try:
             cursor.execute('CREATE TABLE Autorias (Id NUMBER(3), Codigo NUMBER(5), FOREIGN KEY (Id) REFERENCES Autores(Id), FOREIGN KEY (Codigo) REFERENCES Livros(Codigo))')
             self.conexao.commit()
-        except cx_Oracle.DatabaseError:
+        except oracledb.DatabaseError:
             pass # ignora, pois a tabela já existe
 
 ##############################################################################
@@ -286,11 +287,11 @@ class Cad_Autor:
             cursor.execute("INSERT INTO Autores (Id,Nome) VALUES \
                 (seqAutores.nextval,'"+nome+"')")
             self.BD.conexao.commit()
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Cad_Autor.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
                  str(error.code))
@@ -400,11 +401,11 @@ class Listar_Aut:
                 #print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
                 self.tv.insert('','end', values=linha)
                 linha = cursor.fetchone()
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Aut.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
                  str(error.code))
@@ -514,10 +515,10 @@ class Remov_Autor:
                     self.BD.conexao.commit()
                     messagebox.showinfo('Info','Autor removido com sucesso')
                 self.Tela_Remov_Autor.destroy()
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showinfo('Erro','DataBase error: {0}'.format(err), sys.exc_info()[0])
             self.Tela_Remov_Autor.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             #messagebox.showinfo('Erro','Oracle-Error-Code:' + str(error.code))
             #messagebox.showinfo('Erro','Oracle-Error-Message:'+ str(error.message))
@@ -640,11 +641,11 @@ class Cad_Livro:
                          VALUES (seqLivros.nextval,'"+nomeLivro+"',"\
                              +str(precoLivro)+")")
                     self.BD.conexao.commit()
-                except cx_Oracle.DataError as err:
+                except oracledb.DataError as err:
                     messagebox.showerror('Erro DB','DataBase error: '\
                         .format(err), sys.exc_info()[0])
                     self.Tela_Cad_Livro.focus()
-                except cx_Oracle.DatabaseError as err:
+                except oracledb.DatabaseError as err:
                     error, = err.args
                     messagebox.showerror('Erro DB','Oracle-Error-Code:',\
                          error.code)
@@ -777,10 +778,10 @@ class Remov_Livro:
                     #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                     self.tv.insert('','end', values=linha)
                     linha = cursor.fetchone()
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Cad_Autor.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+str(error.code))
             messagebox.showerror('Erro DB','Oracle-Error-Message:'+str(error.message))
@@ -861,11 +862,11 @@ class Remov_Livro:
             else:
                 linha = ''
                 return
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+ str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Remove_Livro.focus()
             self.txt_nome_livro.focus_set()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+ str(error.code))
             messagebox.showerror('Erro DB','Oracle-Error-Message:'+ str(error.message))
@@ -991,11 +992,11 @@ class Listar_Livros:
                 #print('|', end=''), print (linha[0].center(liv,' ')+'|'+linha[1].center(aut,' ')+'|'+str(linha[2]).center(val,' '),end=''), print('|')
                 self.tv.insert('','end', values=linha)
                 linha = cursor.fetchone()
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Livros.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
                  str(error.code))
@@ -1100,10 +1101,10 @@ class Listar_Livros_Ate:
                 messagebox.showinfo('Livros', 'Não há Livros cadastrados')
                 self.Tela_Lista_Ate.destroy()
                 return
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Ate.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+str(error.code))
             messagebox.showerror('Erro DB','Oracle-Error-Message:'+str(error.message))
@@ -1237,11 +1238,11 @@ class Listar_Livros_Entre:
                 self.Tela_Lista_Entre.focus()
                 self.txt_valor_apartir.focus_set()
                 return
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Entre.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             #messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
             #     str(error.code))
@@ -1377,11 +1378,11 @@ class Listar_Livros_Apartir:
                 messagebox.showinfo('Livros', 'Não há Livros cadastrados')
                 self.Tela_Lista_Apartir.destroy()
                 return
-        except cx_Oracle.DataError as err:
+        except oracledb.DataError as err:
             messagebox.showerror('Erro DB','DataBase error: '+\
                 + str((err))+', ' +str(sys.exc_info()[0]))
             self.Tela_Lista_Apartir.focus()
-        except cx_Oracle.DatabaseError as err:
+        except oracledb.DatabaseError as err:
             error, = err.args
             messagebox.showerror('Erro DB','Oracle-Error-Code:'+\
                  str(error.code))

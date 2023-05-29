@@ -34,7 +34,8 @@ global biblio
 global caminho
 global tentativa
 
-biblios = ['pip','cx_Oracle','setuptools','pywin32','oracledb']
+oracledb.init_oracle_client(lib_dir=r"C:\instantclient")
+biblios = ['pip','oracledb','setuptools','pywin32','oracledb']
 atua = ''
 i=0
 biblio = False #variável de controle para saber se está tudo ok e seguir com a execução
@@ -43,7 +44,7 @@ biblio = False #variável de controle para saber se está tudo ok e seguir com a
 fonte_Normal = ("Verdana", "8",'bold')
 fonte_Titulo = ('Arial', 16, 'bold')
 fonte_Texto = ('Times New Roman', 12)
-caminho = sys.path[0] + '\instantclient'
+#caminho = 'C:\instantclient' #sys.path[0] + '\instantclient'
 tentativa = 0
 
 #Inicia as importações
@@ -52,12 +53,12 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
     try:
         # Importando as bibliotecas
         # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
-        import cx_Oracle
+        import oracledb #import cx_Oracle(deprecated)
         import win32api
         from win32api import GetSystemMetrics
         import setuptools
         import pip
-        os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca 'os' para setar o caminho do instantclient
+        #os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca 'os' para setar o caminho do instantclient
         biblio = True
     except ImportError as error1:
         from os import system
@@ -77,7 +78,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                 break
             except OSError as oserror:
                 messagebox.showerror('Erro OS', 'OS error: ' + str(oserror))
-                if not os.path.exists(caminho):
+                '''if not os.path.exists(caminho):
                     #messagebox.showinfo(biblio)
                     messagebox.showerror('OS Erro','Diretório não encontrado ou não existe',)
                     caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
@@ -85,7 +86,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                     import win32api
                     from win32api import GetSystemMetrics
                     import setuptools
-                    import cx_Oracle
+                    import oracledb #import cx_Oracle(deprecated)
                     import inspect
                     biblio=True
                     break
@@ -93,9 +94,9 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
                     import win32api
                     from win32api import GetSystemMetrics
                     import setuptools
-                    import cx_Oracle
+                    import oracledb #import cx_Oracle(deprecated)
                     import inspect
-                    #os.chdir('C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6')
+                    #os.chdir('C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6')'''
             except:
                 messagebox.showerror('Erro','Unexpected error:', sys.exc_info()[0])
                 raise
@@ -105,7 +106,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
             break
     except OSError as err:
         messagebox.showerror('Erro OS', 'OS error: ' + str(err))
-        if not os.path.exists(caminho):
+        '''if not os.path.exists(caminho):
             messagebox.showerror('OS Erro','Diretório não encontrado ou não existe',)
             caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
             os.chdir(caminho)
@@ -113,7 +114,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
             biblio=True
             break
         #else:
-        #    os.chdir('C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6')  
+        #    os.chdir('C:\Courses\instantclient-basic-windows.x64-19.6.0.0.0dbru\instantclient_19_6')  '''
     except:
         messagebox.showerror('Error', 'Unexpected error:', sys.exc_info()[0])
         raise
@@ -123,7 +124,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na verificaç
         import win32api
         from win32api import GetSystemMetrics
         import setuptools
-        import cx_Oracle
+        import oracledb #import cx_Oracle(deprecated)
         import inspect
         biblio=True
         break  # Este comando encerra o 'while True'
@@ -131,17 +132,18 @@ if biblio == FALSE:
     system('python gasrh.py')
 
 def connection():
+    
     global conexao
-    servidor = 'localhost/xe'
+    servidor = 'localhost/xepdb1'
     usuario  = 'system'
     senha    = 'oracle'
-    os.chdir(caminho)
+    #os.chdir(caminho)
     try:
         conexao = oracledb.connect(dsn=servidor,user=usuario,password=senha)#cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
         cursor  = conexao.cursor()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err: #cx_Oracle.DataError as err:(deprecated)
                 messagebox.showerror('Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -157,7 +159,7 @@ def connection():
             messagebox.showerror(error.code,'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
-    except cx_Oracle.DatabaseError:
+    except oracledb.Error:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     
@@ -196,9 +198,9 @@ def connection():
     try:
         cursor.execute('CREATE SEQUENCE seqUsers START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE')
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
             messagebox.showerror('Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -216,7 +218,7 @@ def connection():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.Error:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -226,9 +228,9 @@ def connection():
     try:
         cursor.execute("CREATE TABLE logins (Id NUMBER(3) PRIMARY KEY, users NVARCHAR2(12) UNIQUE NOT NULL, pass NVARCHAR2(8) NOT NULL)")
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -246,7 +248,7 @@ def connection():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.Error:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -255,19 +257,19 @@ def connection():
     try:
         cursor.execute("CREATE SEQUENCE seqFunc START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute("CREATE SEQUENCE seqInss START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute('CREATE TABLE inss (Id_Inss NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
         conexao.commit()
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #print('Oracle-Error-Code:', error.code)
         #print('Oracle-Error-Message:', error.message)
@@ -290,13 +292,13 @@ def connection():
     try:
         cursor.execute("CREATE SEQUENCE seqIrrf START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         pass # ignora, pois a tabela já existe
 
     try:
         cursor.execute('CREATE TABLE irrf (Id_Irrf NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
         conexao.commit()
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #print('Oracle-Error-Code:', error.code)
         #print('Oracle-Error-Message:', error.message)
@@ -342,9 +344,9 @@ def connection():
     try:
         cursor.execute("CREATE TABLE Funcionarios (Id_Func NUMBER(5) PRIMARY KEY, Nome_Func NVARCHAR2(50) UNIQUE NOT NULL, Nome_Setor NVARCHAR2(50) NOT NULL, Salario_Bruto NUMBER(6,2) NOT NULL, Bonus NUMBER(6,2), Meses_Trab NUMBER(3), Dias_Ferias NUMBER(3), Dep NUMBER(2))")
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -362,7 +364,7 @@ def connection():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.Error:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -396,9 +398,9 @@ def logar(user, password):
                 #Login_Tela.destroy()
                 CadUser()
 
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
         messagebox.showerror('DB Error: ' + str(err),'DataBase error: {0}'.format(err), sys.exc_info()[0])
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
@@ -462,9 +464,9 @@ def Cadastrar_User(nome, senha):
         cursor = conexao.cursor()
         cursor.execute("INSERT INTO Logins (Id,users,pass) VALUES (seqUsers.nextval,'"+nome+"','"+senha+"')")
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
         messagebox.showerror('DB Error: ' + str(err),'DataBase error1: ' + err)
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
@@ -549,9 +551,9 @@ def listarUser():
             #print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
             tv.insert('','end', values=linha)
             linha = cursor.fetchone()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -569,7 +571,7 @@ def listarUser():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -609,9 +611,9 @@ def BuscarFun (funcio):
             tv.insert('','end', values=linha)
             linha = cursor.fetchone()
 
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -629,7 +631,7 @@ def BuscarFun (funcio):
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -651,9 +653,9 @@ def removerUser (conexao):
             cursor.execute("DELETE FROM Autores WHERE Nome='"+user+"'")
             conexao.commit ()
             print('Autor removido com sucesso')
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
         print('DataBase error: {0}'.format(err), sys.exc_info()[0])
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         print('Oracle-Error-Code:', error.code)
         print('Oracle-Error-Message:', error.message)
@@ -737,9 +739,9 @@ def cadastrarFunc (func, setor, salb, bonus, mes, dias, dep):
         cursor = conexao.cursor()
         cursor.execute("INSERT INTO Funcionarios (Id_Func, Nome_Func, Nome_Setor, Salario_Bruto, Bonus, Meses_Trab, Dias_Ferias, Dep) VALUES (seqUsers.nextval,'"+func+"','"+setor+"','"+salb+"','"+bonus+"','"+mes+"','"+dias+"','"+dep+"')")
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
         messagebox.showerror('DB Error: ' + str(err),'DataBase error1: ' + err)
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
@@ -801,9 +803,9 @@ def cadastrarFunc (func, setor, salb, bonus, mes, dias, dep):
         nome   = input('\nNome do autor? ')
         cursor.execute("INSERT INTO Autores (Id,Nome) VALUES (seqAutores.nextval,'"+nome+"')")
         conexao.commit()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
         print('DataBase error: {0}'.format(err), sys.exc_info()[0])
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         print('Oracle-Error-Code:', error.code)
         print('Oracle-Error-Message:', error.message)
@@ -881,9 +883,9 @@ def listarFunc():
             #print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
             tv.insert('','end', values=linha)
             linha = cursor.fetchone()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -901,7 +903,7 @@ def listarFunc():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -954,9 +956,9 @@ def listarINSS():
             #print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
             tv.insert('','end', values=linha)
             linha = cursor.fetchone()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -974,7 +976,7 @@ def listarINSS():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
@@ -1032,9 +1034,9 @@ def listarIRRF():
             #print('|', end=''), print (linha[1].center(aut,' '),end=''), print('|')
             tv.insert('','end', values=linha)
             linha = cursor.fetchone()
-    except cx_Oracle.DataError as err:
+    except oracledb.DataError as err:
                 messagebox.showerror('DB Erro','DataBase error: ' + str(err))
-    except cx_Oracle.DatabaseError as err:
+    except oracledb.DatabaseError as err:
         error, = err.args
         #messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
         #messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
@@ -1052,7 +1054,7 @@ def listarIRRF():
             messagebox.showerror(error.code,'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
-    except cx_Oracle.DatabaseError:
+    except oracledb.DatabaseError:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
     else:
