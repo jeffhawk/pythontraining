@@ -5,7 +5,7 @@ try:
     from os import sys
     import oracledb
     os.chdir("C:")
-    os.chdir("C:\instantclient")
+    os.chdir("C:\\instantclient")
     '''os.chdir("C:\\Courses\\Puc\\sqldeveloper-20.4.1.407.0006-x64\\sqldeveloper")'''
     import cx_Oracle
 except OSError as err:
@@ -116,7 +116,7 @@ def main():
 	
     servidor = 'localhost/xe'
     usuario  = 'SYSTEM'
-    senha    = 'oracle'
+    senha    = 'system123'
 
     try:
         conexao = oracledb.connect(dsn=servidor,user=usuario,password=senha)

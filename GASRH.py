@@ -26,7 +26,7 @@ from tkinter import font
 from tkinter import messagebox
 from tkinter import Entry
 from tkinter import ttk
-import tkinter
+#import tkinter
 from tkinter.font import BOLD
 from tkinter.simpledialog import askstring
 import sys
@@ -42,14 +42,14 @@ import time
 #============================================================================
 #Declaração de variáveis globais - Estou ainda verificando a real 
 # necessidade,  pois estou querendo trabalhar com POO
-BIBLIOS = ['pip','cx_Oracle','setuptools','pywin32', 'pillow']
+BIBLIOS = ['pip','cx_Oracle','setuptools','pywin32', 'pillow']#, 'tkinter', 'oracledb']
 biblio = False #variável de controle para saber se está tudo ok e seguir com 
                #a execução
 #caminho = 'InstantClient'
 fonte_Normal = ("Verdana", "8",'bold')
 fonte_Titulo = ('Arial', 16, 'bold')
 fonte_Texto = ('Times New Roman', 12)
-caminho = sys.path[0] + '\instantclient'
+caminho = 'C:\\instantclient' #sys.path[0] + '\\instantclient'
 ICO = sys.path[0] + './images/GA.png'
 IMG = sys.path[0] + '/images/GA.png'
 tentativa = 0
@@ -75,6 +75,9 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         # Verifica se existe as bibliotecas, caso contrário pergunta se quer 
         # instala-las
         import cx_Oracle
+        import tkinter
+        from tkinter import *
+        import tkinter as tk
         import win32
         from win32 import *
         import setuptools
@@ -148,7 +151,7 @@ while not biblio: #Aqui decidi deixar tudo em um laço(While) pois na
         biblio=True     # Este comando encerra o 'while True'
 print(atua)
 if atua == True:
-    system('python.exe' +sys.path[0]+ '\gasrh.py')
+    system('python.exe' +sys.path[0]+ '\\gasrh.py')
     #subprocess.check_call([sys.executable, '.\livraria_gui.py'])
     #quit()
 #============================================================================
@@ -180,13 +183,13 @@ class Conecta_Bd:
         self.tentativa = 0
         self.servidor = 'localhost/xe'
         self.usuario = 'system'
-        self.senha = 'oracle'
+        self.senha = 'system123'
         self.conexao = cx_Oracle.connect(dsn=self.servidor, user=self.usuario, password=self.senha)
     
     def connection(self):
         servidor = 'localhost/xe'
         usuario  = 'system'
-        senha    = 'oracle'
+        senha    = 'system123'
         try:
             self.conexao = cx_Oracle.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
             cursor  = self.conexao.cursor()
@@ -811,7 +814,7 @@ class Splash:
         Label1 = Label(self.Splash_Screen, text='Bem vindo ao Gute Arbeit',\
              fg='blue', font=fonte_Titulo).pack()
         #TesteImage1(splash_Screen)
-        imagem = PhotoImage(file= sys.path[0] + '\images\GA1.png')
+        imagem = PhotoImage(file= sys.path[0] + '\\images\\GA1.png')
         #img = imagem.subsample(1,1)
         w = Label(self.Splash_Screen, image=imagem)
         w.imagem = imagem

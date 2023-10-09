@@ -47,7 +47,7 @@ import oracledb
 #============================================================================
 # Declaração de variáveis globais
 biblio = False
-caminho = 'C:\instantclient' #sys.path[0] +
+caminho = 'C:\\instantclient' #sys.path[0] +
 BIBLIOS = ['pip','oracledb','setuptools','pywin32', 'pillow']
 atua = ''
 i=0
@@ -192,7 +192,7 @@ class Conecta_Bd: #Definindo a conexão ao banco de dados
     def __init__(self) -> None:
         self.servidor = 'localhost/xe'
         self.usuario  = 'system'
-        self.senha    = 'oracle'
+        self.senha    = 'system123'
         self.conexao = oracledb.connect(dsn=self.servidor,user=self.usuario,password=self.senha)
 
     def connection(self):
