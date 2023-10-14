@@ -1,12 +1,14 @@
 # coding: utf-8
 '''PROJETO DE SALA DE AULA - SISTEMA DE LIVRARIA
-Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de nota na matéria de APPC
+Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para 
+obtenção de nota na matéria de APPC
 no curso de SISTEMAS DE INFORMAÇÃO, sob a supervisão do Ilmo. Prof. André de Carvalho
 
 JEFFERSON EDUARDO LUIZ
 RA 19568823
 
-Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendidas de forma autônoma ao curso.
+Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades 
+aprendidas de forma autônoma ao curso.
 Também foi utilizado o GUI(Graphical User Interface) Tkinter para desenvolvimento do programa
 
 '''
@@ -14,24 +16,27 @@ Também foi utilizado o GUI(Graphical User Interface) Tkinter para desenvolvimen
 # Declaração de variáveis globais
 from os import strerror
 import sys
+import oracledb
 
+# global conexao
 global biblio
 global caminho
 biblios = ['pip', 'PySimpleGUI', 'oracledb',
            'setuptools', 'termcolor']  # ,'pywin32']
 atua = ''
 i = 0
-
+# conexao = ''
 # Importando as bibliotecas
 # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
 biblio = False  # variável de controle para saber se está tudo ok e seguir com a execução
 caminho = 'C:\\instantclient'  # sys.path[0] +
-# Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
+# Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Biblios
 while not biblio:
     try:  # Inicia as importações
         import win32api
         from win32api import GetSystemMetrics
         import os
+        from os import system
         import ctypes
         import sys
         import tkinter
@@ -43,7 +48,6 @@ while not biblio:
         import pip
         import subprocess
         import time
-        from os import system
         from termcolor import colored
         # Aqui estou usando a funcionalidade da biblioteca "os" para setar o caminho do instantclient
         os.chdir(caminho)
@@ -51,7 +55,7 @@ while not biblio:
     except ImportError as error1:
         from os import system
         system('cls')
-        print("Error: {0}".format(error1))
+        print(f"Error: {0}".format(error1))
         print('Erro ao tentar importar bibliotecas necessárias!!')
         atua = input('Deseja instalar as bibliotecas necessárias? - S/N: ')
         if atua == 's' or atua == 'S':
@@ -83,7 +87,7 @@ while not biblio:
                 print("Error: {0}".format(errorimp))
             except OSError as oserror:
                 system('cls')
-                print("OS error: {0}".format(oserror), sys.exc_info()[0])
+                print(f"OS error: {0}".format(oserror), sys.exc_info()[0])
                 if not os.path.exists(caminho):
                     print(biblio)
                     print('Diretório não encontrado ou não existe\n\n',)
@@ -93,7 +97,8 @@ while not biblio:
                     break
                 else:
                     os.chdir(
-                        "C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
+                        "C:\\Courses\\"
+                        "instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6")
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
@@ -123,14 +128,15 @@ while not biblio:
         break  # Este comando encerra o "while True"
 
 
-def cadastreAutor(conexao):
-    cursor = conexao.cursor()
+def cadastre_autor(con_cad_autor):
+    """Função responsável por cadastrar os autores"""
+    cursor = con_cad_autor.cursor()
     nome = input("\nNome do autor? ")
 
     try:
         cursor.execute(
             "INSERT INTO Autores (Id,Nome) VALUES (seqAutores.nextval,'"+nome+"')")
-        conexao.commit()
+        con_cad_autor.commit()
     except oracledb.DatabaseError:
         print("Autor repetido")
     else:
@@ -155,8 +161,8 @@ def removaAutor(conexao):
         print('O autor tem livros cadastrados, favor remover os livros primeiro!')
 
 
-def listeAutor(conexao):
-    cursor = conexao.cursor()
+def liste_autor(con_lis):
+    cursor = con_lis.cursor()
     cursor.execute("SELECT * FROM Autores ORDER BY Autores.Nome")
 
     linha = cursor.fetchone()  # linha(1,'Arthur')
@@ -274,9 +280,9 @@ def listeLivros(conexao):
         linha = cursor.fetchone()
 
 
-def listeLivroAte(conexao):
+def listeLivroAte(conexao_l):
     livro = input('Você gostaria de listar livros até que valor?: ')
-    cursor = conexao.cursor()
+    cursor = conexao_l.cursor()
     cursor.execute("SELECT Livros.Nome, Autores.Nome, Livros.Preco FROM Livros, Autores, Autorias WHERE Livros.Preco <= " +
                    livro + " AND Livros.Codigo=Autorias.Codigo AND Autorias.Id=Autores.Id ORDER BY Livros.Preco")
     linha = cursor.fetchone()
@@ -300,7 +306,8 @@ def listeLivroAte(conexao):
     cursor.scroll(mode="first")
     linha = cursor.fetchone()
     print('|', end=''), print(' LIVRO '.center(liv, '*') + '|' +
-                              ' AUTOR '.center(aut, '*') + '|' + ' VALOR '.center(val, '*'), end=''), print('|')
+                              ' AUTOR '.center(aut, '*') + '|' +
+                              ' VALOR '.center(val, '*'), end=''), print('|')
     while linha:
         print('|', end=''), print(linha[0].center(liv, ' ')+'|'+linha[1].center(
             aut, ' ')+'|'+str(linha[2]).center(val, ' '), end=''), print('|')
@@ -496,17 +503,23 @@ def saida():
     time.sleep(3)
 
 
-def connection():
-    global conexao
+def connector():
+    """Função responsável por realizar a conexão com o Banco de Dados"""
+    #global conexao
+    oracledb.init_oracle_client()
     servidor = 'localhost/xe'
     usuario = 'system'
-    senha = 'oracle'
+    senha = 'system123'
+    modo = oracledb.SYSDBA
     try:
-        conexao = oracledb.connect(dsn=servidor, user=usuario, password=senha)
+        # global conexao
+        conexao = oracledb.connect(dsn=servidor, user=usuario, password=senha, mode=0)
         cursor = conexao.cursor()
-    except oracledb.DatabaseError:
-        print("Erro de conexão com o BD\n")
-        return
+        print("chegou aqui")
+        # return conexao
+    except oracledb.DatabaseError as db_err_1:
+        print("Erro de conexão com o BD\n {0}\n".format(db_err_1), sys.exc_info()[0])
+        return None
     '''
     try:
         cursor.execute("DROP TABLE Autorias")
@@ -568,21 +581,32 @@ def connection():
 
     try:
         cursor.execute(
-            "CREATE TABLE Autorias (Id NUMBER(3), Codigo NUMBER(5), FOREIGN KEY (Id) REFERENCES Autores(Id), FOREIGN KEY (Codigo) REFERENCES Livros(Codigo))")
+            "CREATE TABLE Autorias ("
+            "Id NUMBER(3),"
+            "Codigo NUMBER(5), "
+            "FOREIGN KEY (Id) REFERENCES Autores(Id), "
+            "FOREIGN KEY (Codigo) REFERENCES Livros(Codigo))")
         conexao.commit()
     except oracledb.DatabaseError:
         pass  # ignora, pois a tabela já existe
 
+    return conexao
+
 
 def programa():
+    """Função/Módulo principal do programa"""
     # print ("PROGRAMA PARA PARA CADASTRAR LIVROS E SEUS AUTORES")
-    connection()
-    fimDoPrograma = False
-    fimdocadastro = False
-    fimdaremocao = False
-    fimdalistagem = False
+    system("cls")
+    conexao = connector()
+    if not conexao:
+        sys.exit(1)
 
-    while not fimDoPrograma:
+    fim_do_programa = False
+    fim_do_cadastro = False
+    fim_da_remocao = False
+    fim_da_listagem = False
+
+    while not fim_do_programa:
         tela_prin()
         try:
             opcao = int(input("Digite sua opção:    "))
@@ -592,8 +616,8 @@ def programa():
             # renumerar opções abaixo e usar até 4 novos subprogramas
             # procurar economizar nessa quantidade acima de subprogramas
             if opcao == 1:
-                fimdocadastro = False
-                while not fimdocadastro:
+                fim_do_cadastro = False
+                while not fim_do_cadastro:
                     tela_cadastro()
                     try:
                         opcad = int(input("Digite sua opção: "))
@@ -602,7 +626,7 @@ def programa():
                     else:
                         if opcad == 1:
                             tela_cadAutor()
-                            cadastreAutor(conexao)
+                            cadastre_autor(conexao)
                             # time.sleep(2)
                             input("\n\nPress Enter to continue...")
                         elif opcad == 2:
@@ -611,14 +635,14 @@ def programa():
                             # time.sleep(2)
                             input("\n\nPress Enter to continue...")
                         elif opcad == 0:
-                            fimdocadastro = True
+                            fim_do_cadastro = True
                         else:
                             print("Opção inválida\n")
 
                     # cadastreAutor (conexao)
             elif opcao == 2:
-                fimdaremocao = False
-                while not fimdaremocao:
+                fim_da_remocao = False
+                while not fim_da_remocao:
                     tela_remocao()
                     try:
                         opcad = int(input("Digite sua opção: "))
@@ -637,13 +661,13 @@ def programa():
                             # time.sleep(2)
                             input("\n\nPress Enter to continue...")
                         elif opcad == 0:
-                            fimdaremocao = True
+                            fim_da_remocao = True
                         else:
                             print("Opção inválida\n")
 
             elif opcao == 3:
-                fimdalistagem = False
-                while not fimdalistagem:
+                fim_da_listagem = False
+                while not fim_da_listagem:
                     tela_listagem()
                     try:
                         oplist = int(input("Digite sua opção: "))
@@ -652,7 +676,7 @@ def programa():
                     else:
                         if oplist == 1:
                             tela_listAutor()
-                            listeAutor(conexao)
+                            liste_autor(conexao)
                             # time.sleep(2)
                             input("\n\nPress Enter to continue...")
                         elif oplist == 2:
@@ -676,7 +700,7 @@ def programa():
                             # time.sleep(2)
                             input("\n\nPress Enter to continue...")
                         elif oplist == 0:
-                            fimdalistagem = True
+                            fim_da_listagem = True
                         else:
                             print("Opção inválida\n")
             elif opcao == 4:
@@ -684,7 +708,7 @@ def programa():
             elif opcao == 5:
                 listeLivros(conexao)
             elif opcao == 0:
-                fimDoPrograma = True
+                fim_do_programa = True
             else:
                 print("Opção inválida\n")
 
@@ -702,7 +726,7 @@ def programa():
     print ("9) LISTAR    os Livros acima de um certo preço") # fazer
 '''
 
-if biblio == True:
+if biblio:
     programa()
 else:
     print("Resolveu sair")

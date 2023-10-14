@@ -1,15 +1,17 @@
 # ==========================
 '''PROJETO FINAL - SISTEMA DE RH - "Gute Arbeit Sistema de RH"
-Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de nota final na PONTIFÍCIA UNIVERSIDADE CATÓLICA DE CAMPINAS - PUC-CAMPINAS,
+Software/Programa desenvolvido aplicando os conhecimentos obtidos em sala de aula para obtenção de 
+nota final na PONTIFÍCIA UNIVERSIDADE CATÓLICA DE CAMPINAS - PUC-CAMPINAS,
 no CENTRO DE CIÊNCIAS EXATAS, AMBIENTAIS E DE TECNOLOGIA para o curso de SISTEMAS DE INFORMAÇÃO.
 
 JEFFERSON EDUARDO LUIZ
 RA 19568823
 
-Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades aprendida de forma autônoma ao curso.
-
+Foi empregado todo o conhecimento obtido em sala de aula e acrescentado algumas funcionalidades 
+aprendida de forma autônoma ao curso.
 '''
 # ==========================
+
 # Importando Bibliotecas internas do Python
 from tkinter import *
 import tkinter
@@ -19,49 +21,39 @@ from tkinter.simpledialog import askstring
 import sys
 import os
 import ctypes
-import sys
 from os import system
 import inspect
 from functools import partial
 import string
 import subprocess
 import time
-import inspect
 import oracledb
-
 from win32api import MessageBox, MessageBoxEx
 
 # Declaração de variáveis globais
 global biblio
 global caminho
 global tentativa
-
 oracledb.init_oracle_client(lib_dir=r"C:\\instantclient")
 biblios = ['pip', 'oracledb', 'setuptools', 'pywin32', 'oracledb']
 atua = ''
 i = 0
 biblio = False  # variável de controle para saber se está tudo ok e seguir com a execução
-# caminho = 'InstantClient'
-
-fonte_Normal = ("Verdana", "8", 'bold')
+fonte_normal = ("Verdana", "8", 'bold')
 fonte_Titulo = ('Arial', 16, 'bold')
 fonte_Texto = ('Times New Roman', 12)
-# caminho = 'C:\instantclient' #sys.path[0] + '\instantclient'
 tentativa = 0
 
 # Inicia as importações
-
-# Aqui decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
+#Decidi deixar tudo em um laço(While) pois na verificação tem a opção da instalação das Bibliotecas
 while not biblio:
     try:
-        # Importando as bibliotecas
         # Verifica se existe as bibliotecas, caso contrário pergunta se quer instala-las
         import oracledb  # import cx_Oracle(deprecated)
         import win32api
         from win32api import GetSystemMetrics
         import setuptools
         import pip
-        # os.chdir(caminho) #Aqui estou usando a funcionalidade da biblioteca 'os' para setar o caminho do instantclient
         biblio = True
     except ImportError as error1:
         from os import system
@@ -86,28 +78,9 @@ while not biblio:
                 break
             except OSError as oserror:
                 messagebox.showerror('Erro OS', 'OS error: ' + str(oserror))
-                '''if not os.path.exists(caminho):
-                    #messagebox.showinfo(biblio)
-                    messagebox.showerror('OS Erro','Diretório não encontrado ou não existe',)
-                    caminho = askstring('OS Error:', 'Entre com o caminho do Instant Client: ')
-                    #os.chdir(caminho)
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import setuptools
-                    import oracledb #import cx_Oracle(deprecated)
-                    import inspect
-                    biblio=True
-                    break
-                else:
-                    import win32api
-                    from win32api import GetSystemMetrics
-                    import setuptools
-                    import oracledb #import cx_Oracle(deprecated)
-                    import inspect
-                    #os.chdir('C:\\Courses\\instantclient-basic-windows.x64-19.6.0.0.0dbru\\instantclient_19_6')'''
             except:
                 messagebox.showerror(
-                    'Erro', 'Unexpected error:', sys.exc_info()[0])
+                    'Erro', 'Unexpected error: ' + sys.exc_info()[0])
                 raise
         else:
             messagebox.showerror('Erro', 'Bibliotecas não  instaladas!')
@@ -133,21 +106,18 @@ if biblio == FALSE:
 
 
 def connection():
-
+    """Função criada para realizar a conexão com o banco Oracle"""
     global conexao
     servidor = 'localhost/xepdb1'
     usuario = 'system'
     senha = 'system123'
-    # os.chdir(caminho)
     try:
-        # cx_Oracle.connect(dsn=servidor,user=usuario,password=senha)
         conexao = oracledb.connect(dsn=servidor, user=usuario, password=senha)
         cursor = conexao.cursor()
-    # cx_Oracle.DataError as err:(deprecated)
     except oracledb.DataError as err1:
         messagebox.showerror('Erro', 'DataBase error: ' + str(err1))
     except oracledb.DatabaseError as err2:
-        error, = err2.args
+        error,  = err2.args
         messagebox.showerror(
             'DB Erro', 'Oracle-Error-Code: ' + str(error.code))
         messagebox.showerror(
@@ -166,86 +136,20 @@ def connection():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="1")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
     except oracledb.Error:
         messagebox.showerror('DB Error', 'Erro de conexão com o BD')
         return
-
-    '''
-        try:
-            cursor.execute('DROP TABLE Autorias')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-
-        try:
-            cursor.execute('DROP SEQUENCE seqAutores')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a sequencia nao existe
-
-        try:
-            cursor.execute('DROP TABLE Autores')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-
-        try:
-            cursor.execute('DROP SEQUENCE seqLivros')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a sequencia nao existe
-
-        try:
-            cursor.execute('DROP TABLE Livros')
-            conexao.commit()
-        except cx_Oracle.DatabaseError:
-            pass # ignora, pois a tabela nao existe
-    '''
-
     try:
         cursor.execute(
-            'CREATE SEQUENCE seqUsers START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 NOCACHE CYCLE')
+        'CREATE SEQUENCE seqUsers START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 999 '\
+            'NOCACHE CYCLE')
         conexao.commit()
     except oracledb.DataError as err3:
         messagebox.showerror('Erro', 'DataBase error: ' + str(err3))
     except oracledb.DatabaseError as err4:
         error, = err4.args
-        # messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
-        # messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
-        if error.code == 1400:
-            messagebox.showerror(
-                error.code, 'Você deve inserir um nome para o Livro, não pode ser em branco')
-            return
-        elif error.code == 1:
-            messagebox.showerror(error.code, 'Livro já cadastrado')
-            return
-        elif error.code == 936:
-            messagebox.showerror(
-                error.code, 'Erro de Sintax, favor verificar código')
-        elif error.code == 933:
-            messagebox.showerror(
-                error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
-        elif error.code == 904:
-            messagebox.showerror(error.code, 'Campo não encontrado na tabela')
-        elif error.code == 955:
-            pass
-    except oracledb.Error:
-        messagebox.showerror('DB Error', 'Erro de conexão com o BD')
-        return
-    else:
-        pass  # ignora, pois a tabela já existe
-
-    try:
-        cursor.execute(
-            "CREATE TABLE logins (Id NUMBER(3) PRIMARY KEY, users NVARCHAR2(12) UNIQUE NOT NULL, pass NVARCHAR2(8) NOT NULL)")
-        conexao.commit()
-    except oracledb.DataError as err5:
-        messagebox.showerror('Erro', 'DataBase error: ' + str(err5))
-    except oracledb.DatabaseError as err6:
-        error, = err6.args
-        # messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
-        # messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
         if error.code == 1400:
             messagebox.showerror(
                 error.code, 'Você deve inserir um nome para o Livro, não pode ser em branco')
@@ -260,6 +164,7 @@ def connection():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="2")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -268,55 +173,83 @@ def connection():
         return
     else:
         pass  # ignora, pois a tabela já existe
-
+    try:
+        cursor.execute(
+        "CREATE TABLE logins (Id NUMBER(3) PRIMARY KEY, users NVARCHAR2(12) UNIQUE NOT NULL, "\
+            "pass NVARCHAR2(8) NOT NULL)")
+        conexao.commit()
+    except oracledb.DataError as err5:
+        messagebox.showerror('Erro', 'DataBase error: ' + str(err5))
+    except oracledb.DatabaseError as err6:
+        error, = err6.args
+        if error.code == 1400:
+            messagebox.showerror(
+                error.code, 'Você deve inserir um nome para o Livro, não pode ser em branco')
+            return
+        if error.code == 1:
+            messagebox.showerror(error.code, 'Livro já cadastrado')
+            return
+        if error.code == 936:
+            messagebox.showerror(
+                error.code, 'Erro de Sintax, favor verificar código')
+        elif error.code == 933:
+            messagebox.showerror(
+                error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
+        elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="3")
+            messagebox.showerror(error.code, 'Campo não encontrado na tabela')
+        elif error.code == 955:
+            pass
+    except oracledb.Error:
+        messagebox.showerror('DB Error', 'Erro de conexão com o BD')
+        return
+    else:
+        pass  # ignora, pois a tabela já existe
     try:
         cursor.execute(
             "CREATE SEQUENCE seqFunc START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
     except oracledb.DatabaseError:
-        pass  # ignora, pois a tabela já existe
-
+        pass 
     try:
         cursor.execute(
             "CREATE SEQUENCE seqInss START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
     except oracledb.DatabaseError:
         pass  # ignora, pois a tabela já existe
-
     try:
         cursor.execute(
-            'CREATE TABLE inss (Id_Inss NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
+            'CREATE TABLE inss (Id_Inss NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) '\
+                'UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
         conexao.commit()
     except oracledb.DatabaseError as err7:
         error, = err7.args
-        # print('Oracle-Error-Code:', error.code)
-        # print('Oracle-Error-Message:', error.message)
         if error.code == 1400:
             print('Você deve inserir um nome para o Livro, não pode ser em branco')
             return
-        elif error.code == 1:
+        if error.code == 1:
             print('Livro já cadastrado')
             return
-        elif error.code == 936:
+        if error.code == 936:
             stack = inspect.stack()
             print('Erro de Sintax, favor verificar código', stack[1].function)
         elif error.code == 933:
             print('Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="4")
             print('Campo não encontrado na tabela')
         else:
             pass  # ignora, pois a tabela já existe
-
     try:
         cursor.execute(
             "CREATE SEQUENCE seqIrrf START WITH 1 INCREMENT BY 1 MAXVALUE 999 NOCACHE CYCLE")
         conexao.commit()
     except oracledb.DatabaseError:
         pass  # ignora, pois a tabela já existe
-
     try:
         cursor.execute(
-            'CREATE TABLE irrf (Id_Irrf NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50) UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
+            'CREATE TABLE irrf (Id_Irrf NUMBER(5) PRIMARY KEY, Sal_Cont NVARCHAR2(50)'\
+                'UNIQUE NOT NULL, Aliquota NUMBER(5,2), Parc_Dedu NUMBER(6,2) )')
         conexao.commit()
     except oracledb.DatabaseError as err8:
         error, = err8.args
@@ -325,65 +258,46 @@ def connection():
         if error.code == 1400:
             print('Você deve inserir um nome para o Livro, não pode ser em branco')
             return
-        elif error.code == 1:
+        if error.code == 1:
             print('Livro já cadastrado')
             return
-        elif error.code == 936:
+        if error.code == 936:
             stack = inspect.stack()
             print('Erro de Sintax, favor verificar código', stack[1].function)
         elif error.code == 933:
             print('Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="5")
             print('Campo não encontrado na tabela')
         else:
             pass  # ignora, pois a tabela já existe
-
-    '''try:
-        cursor.execute('CREATE TABLE Setor (Id_Setor NUMBER(5) PRIMARY KEY, Nome_Setor NVARCHAR2(50) UNIQUE NOT NULL)')
-        conexao.commit()
-    except cx_Oracle.DatabaseError as err:
-        error, = err.args
-        print('Oracle-Error-Code:', error.code)
-        print('Oracle-Error-Message:', error.message)
-        if error.code == 1400:
-            print('Você deve inserir um nome para o Livro, não pode ser em branco')
-            return
-        elif error.code == 1:
-            print('Livro já cadastrado')
-            return
-        elif error.code == 936:
-            stack = inspect.stack()
-            print('Erro de Sintax, favor verificar código', stack[1].function)
-        elif error.code == 933:
-            print('Favor usar "." ao invés de "," nos valores numéricos decimais')
-        elif error.code == 904:
-            print('Campo não encontrado na tabela')
-        else:
-            pass # ignora, pois a tabela já existe'''
-
     try:
-        cursor.execute("CREATE TABLE Funcionarios (Id_Func NUMBER(5) PRIMARY KEY, Nome_Func NVARCHAR2(50) UNIQUE NOT NULL, Nome_Setor NVARCHAR2(50) NOT NULL, Salario_Bruto NUMBER(6,2) NOT NULL, Bonus NUMBER(6,2), Meses_Trab NUMBER(3), Dias_Ferias NUMBER(3), Dep NUMBER(2))")
+        cursor.execute("CREATE TABLE Funcionarios (Id_Func NUMBER(5) PRIMARY KEY, "\
+                       "Nome_Func NVARCHAR2(50) UNIQUE NOT NULL, "\
+                       "Nome_Setor NVARCHAR2(50) NOT NULL, "\
+                       "Salario_Bruto NUMBER(6,2) NOT NULL, "\
+                       "Bonus NUMBER(6,2), "\
+                       "Meses_Trab NUMBER(3), Dias_Ferias NUMBER(3), Dep NUMBER(2))")
         conexao.commit()
     except oracledb.DataError as err9:
         messagebox.showerror('DB Erro', 'DataBase error: ' + str(err9))
     except oracledb.DatabaseError as err10:
         error, = err10.args
-        # messagebox.showerror('DB Erro','Oracle-Error-Code: '+ str(error.code))
-        # messagebox.showerror('DB Erro','Oracle-Error-Message:' + str(error.message))
         if error.code == 1400:
             messagebox.showerror(
                 error.code, 'Você deve inserir um nome para o Livro, não pode ser em branco')
             return
-        elif error.code == 1:
+        if error.code == 1:
             messagebox.showerror(error.code, 'Livro já cadastrado')
             return
-        elif error.code == 936:
+        if error.code == 936:
             messagebox.showerror(
                 error.code, 'Erro de Sintax, favor verificar código')
         elif error.code == 933:
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="6")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -393,8 +307,8 @@ def connection():
     else:
         pass  # ignora, pois a tabela já existe
 
-
 def logar(user, password):
+    """Função para verificar usuário e senha e logar no sistema"""
     try:
         global tentativa
         user1 = user.get()
@@ -417,30 +331,26 @@ def logar(user, password):
             entra = 0
             tentativa += 1
         else:
-            # messagebox.showinfo('Logando...','Entrando')
             entra = 1
         if tentativa > 3:
             cad = messagebox.askyesno(
                 'Teste', 'Gostaria de cadastrar um usuário de acesso?')
             if cad == YES:
-                # Login_Tela.destroy()
-                CadUser()
+                cad_user()
 
-    except oracledb.DataError as err:
+    except oracledb.DataError as err11:
         messagebox.showerror(
-            'DB Error: ' + str(err), 'DataBase error: {0}'.format(err), sys.exc_info()[0])
-    except oracledb.DatabaseError as err:
-        error, = err.args
-        # messagebox.showerror('DB Error: ' + str(error.code), 'Oracle-Error-Code: '+ str(error.code))
-        # messagebox.showerror('DB Error: ' + str(error.code),'Oracle-Error-Message:' + str(error.message))
+            'DB Error: ' + str(err11), 'DataBase error: {0} '.format(err11) + sys.exc_info()[0])
+    except oracledb.DatabaseError as err12:
+        error, = err12.args
         if error.code == 1400:
             messagebox.showerror(
                 error.code, 'Você deve inserir um nome para o Autor, não pode ser em branco')
             return
-        elif error.code == 1:
+        if error.code == 1:
             messagebox.showerror(error.code, 'Autor repetido')
             return
-        elif error.code == 936:
+        if error.code == 936:
             stack = inspect.stack()
             messagebox.showerror(
                 error.code, 'Erro de Sintax, favor verificar código' + stack[1].function)
@@ -451,15 +361,16 @@ def logar(user, password):
             messagebox.showerror(
                 error.code, 'O autor tem livros cadastrados, favor remover os livros primeiro!')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="7")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
     if entra == 1:
-        Login_Tela.destroy()
+        login_tela.destroy()
         programa()
 
 
-def CadUser():
+def cad_user():
     global Tela_Cad_User, txt_Nome_User, txt_Senha_User
     Tela_Cad_User = Tk()
     Tela_Cad_User.title('Cadastro de Usuários')
@@ -475,25 +386,25 @@ def CadUser():
     Frame_Dados_User = Frame(Tela_Cad_User)
     Frame_Dados_User.pack()
     lbl_Nome_User = Label(
-        Frame_Dados_User, text='Usuário: ', font=fonte_Normal)
+        Frame_Dados_User, text='Usuário: ', font=fonte_normal)
     lbl_Nome_User.grid(row=0)
-    txt_Nome_User = Entry(Frame_Dados_User, font=fonte_Normal)
+    txt_Nome_User = Entry(Frame_Dados_User, font=fonte_normal)
     txt_Nome_User.grid(row=0, column=1)
-    lbl_Pass_User = Label(Frame_Dados_User, text='Senha: ', font=fonte_Normal)
+    lbl_Pass_User = Label(Frame_Dados_User, text='Senha: ', font=fonte_normal)
     lbl_Pass_User.grid(row=1)
-    txt_Senha_User = Entry(Frame_Dados_User, font=fonte_Normal, show='*')
+    txt_Senha_User = Entry(Frame_Dados_User, font=fonte_normal, show='*')
     txt_Senha_User.grid(row=1, column=1)
-    txt_Nome_User.focus()
+    txt_Nome_User.focus_set()
 
-    Frame_Btn_Cad_user = Frame(Tela_Cad_User)
-    Frame_Btn_Cad_user.pack(side=BOTTOM)
-    btn_Cad_User = Button(Frame_Btn_Cad_user, text='Cadastrar', command=lambda: Cadastrar_User(
-        txt_Nome_User.get(), txt_Senha_User.get()), fg='blue', font=fonte_Normal)
-    # btn_Entrar.bind('<Button-1>', logar)
+    frame_btn_Cad_user = Frame(Tela_Cad_User)
+    frame_btn_Cad_user.pack(side=BOTTOM)
+    btn_Cad_User = Button(frame_btn_Cad_user, text='Cadastrar', command=lambda: Cadastrar_User(
+        txt_Nome_User.get(), txt_Senha_User.get()), fg='blue', font=fonte_normal)
+    # btn_entrar.bind('<Button-1>', logar)
     btn_Cad_User.pack(side=LEFT)
-    btn_Sair_Cad = Button(Frame_Btn_Cad_user, text='Cancelar',
-                          fg='blue', command=Tela_Cad_User.destroy, font=fonte_Normal)
-    btn_Sair_Cad.pack(side=RIGHT)
+    btn_sair_cad = Button(frame_btn_Cad_user, text='Cancelar',
+                          fg='blue', command=Tela_Cad_User.destroy, font=fonte_normal)
+    btn_sair_cad.pack(side=RIGHT)
 
 
 def Cadastrar_User(nome, senha):
@@ -516,10 +427,10 @@ def Cadastrar_User(nome, senha):
             Tela_Cad_User.lift()
             txt_Nome_User.focus()
             return
-        elif error.code == 1:
+        if error.code == 1:
             messagebox.showerror(error.code, 'Autor repetido')
             return
-        elif error.code == 936:
+        if error.code == 936:
             stack = inspect.stack()
             messagebox.showerror(
                 error.code, 'Erro de Sintax, favor verificar código' + stack[1].function)
@@ -530,6 +441,7 @@ def Cadastrar_User(nome, senha):
             messagebox.showerror(
                 error.code, 'O autor tem livros cadastrados, favor remover os livros primeiro!')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="8")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -544,12 +456,13 @@ def Cadastrar_User(nome, senha):
         if op == YES:
             txt_Nome_User.delete(0, END)
             txt_Senha_User.delete(0, END)
+            txt_Nome_User.focus_set()
             return
-        elif op == NO:
+        if op == NO:
             Tela_Cad_User.destroy()
-            txt_Id_Usuario.delete(0, END)
-            txt_Pass.delete(0, END)
-            txt_Id_Usuario.focus()
+            #txt_id_usuario.delete(0, END)
+            #txt_pass.delete(0, END)
+            #txt_id_usuario.focus()
             pass
 
 
@@ -617,6 +530,7 @@ def listarUser():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="9")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -630,7 +544,7 @@ def listarUser():
 def Fechar_Tela_Cad():
     if tentativa > 3:
         Tela_Cad_User.destroy()
-        Tela_Login()
+        tela_login()
     else:
         Tela_Cad_User.destroy()
 
@@ -683,6 +597,7 @@ def BuscarFun(funcio):
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="10")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -729,6 +644,7 @@ def removerUser(conexao):
         elif error.code == 2292:
             print('O autor tem livros cadastrados, favor remover os livros primeiro!')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="11")
             print('Campo não encontrado na tabela')
     except:
         print('DataBase error: {0}', sys.exc_info()[0])
@@ -751,53 +667,53 @@ def CadFunc():
     Frame_Dados_Func = Frame(Tela_Cadastro_Func)
     Frame_Dados_Func.pack()
     lbl_Nome_Func = Label(
-        Frame_Dados_Func, text='Funcionário: ', font=fonte_Normal)
+        Frame_Dados_Func, text='Funcionário: ', font=fonte_normal)
     lbl_Nome_Func.grid(row=0)
-    txt_Nome_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Nome_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Nome_Func.grid(row=0, column=1)
-    lbl_Setor_Func = Label(Frame_Dados_Func, text='Setor: ', font=fonte_Normal)
+    lbl_Setor_Func = Label(Frame_Dados_Func, text='Setor: ', font=fonte_normal)
     lbl_Setor_Func.grid(row=0, column=2)
-    txt_Setor_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Setor_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Setor_Func.grid(row=0, column=3)
     lbl_SalB_Func = Label(
-        Frame_Dados_Func, text='Salário Bruto: ', font=fonte_Normal)
+        Frame_Dados_Func, text='Salário Bruto: ', font=fonte_normal)
     lbl_SalB_Func.grid(row=1)
-    txt_SalB_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_SalB_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_SalB_Func.grid(row=1, column=1)
-    lbl_Bonus_Func = Label(Frame_Dados_Func, text='Bônus: ', font=fonte_Normal)
+    lbl_Bonus_Func = Label(Frame_Dados_Func, text='Bônus: ', font=fonte_normal)
     lbl_Bonus_Func.grid(row=1, column=2)
-    txt_Bonus_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Bonus_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Bonus_Func.grid(row=1, column=3)
     lbl_Meses_Func = Label(
-        Frame_Dados_Func, text='Meses Trabalhados: ', font=fonte_Normal)
+        Frame_Dados_Func, text='Meses Trabalhados: ', font=fonte_normal)
     lbl_Meses_Func.grid(row=2, column=0)
-    txt_Meses_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Meses_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Meses_Func.grid(row=2, column=1)
     lbl_Dias_Func = Label(
-        Frame_Dados_Func, text='Dias de férias: ', font=fonte_Normal)
+        Frame_Dados_Func, text='Dias de férias: ', font=fonte_normal)
     lbl_Dias_Func.grid(row=2, column=2)
-    txt_Dias_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Dias_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Dias_Func.grid(row=2, column=3)
     lbl_Dep_Func = Label(
-        Frame_Dados_Func, text='Dependentes: ', font=fonte_Normal)
+        Frame_Dados_Func, text='Dependentes: ', font=fonte_normal)
     lbl_Dep_Func.grid(row=3, column=0)
-    txt_Dep_Func = Entry(Frame_Dados_Func, font=fonte_Normal)
+    txt_Dep_Func = Entry(Frame_Dados_Func, font=fonte_normal)
     txt_Dep_Func.grid(row=3, column=1)
     txt_Nome_Func.focus()
-    Frame_Btn_Cad_func = Frame(Tela_Cadastro_Func)
-    Frame_Btn_Cad_func.pack(side=BOTTOM)
+    frame_btn_Cad_func = Frame(Tela_Cadastro_Func)
+    frame_btn_Cad_func.pack(side=BOTTOM)
     if txt_Nome_Func.get() == "" or txt_Setor_Func.get() == "" or txt_SalB_Func.get() == "" or txt_Bonus_Func.get() == "" or txt_Meses_Func.get() == "" or txt_Dias_Func.get() == "":
         messagebox.showwarning(
             'Atenção', 'Todos os campos devem ser preenchidos')
         Tela_Cadastro_Func.lift()
         txt_Nome_Func.focus()
-    btn_Cad_Func = Button(Frame_Btn_Cad_func, text='Cadastrar', command=lambda: cadastrarFunc(txt_Nome_Func.get(), txt_Setor_Func.get(
-    ), txt_SalB_Func.get(), txt_Bonus_Func.get(), txt_Meses_Func.get(), txt_Dias_Func.get(), txt_Dep_Func.get()), fg='blue', font=fonte_Normal)
-    # btn_Entrar.bind('<Button-1>', logar)
+    btn_Cad_Func = Button(frame_btn_Cad_func, text='Cadastrar', command=lambda: cadastrarFunc(txt_Nome_Func.get(), txt_Setor_Func.get(
+    ), txt_SalB_Func.get(), txt_Bonus_Func.get(), txt_Meses_Func.get(), txt_Dias_Func.get(), txt_Dep_Func.get()), fg='blue', font=fonte_normal)
+    # btn_entrar.bind('<Button-1>', logar)
     btn_Cad_Func.pack(side=LEFT)
-    btn_Sair_Func = Button(Frame_Btn_Cad_func, text='Cancelar', fg='blue',
-                           command=Tela_Cadastro_Func.destroy, font=fonte_Normal)
-    btn_Sair_Func.pack(side=RIGHT)
+    btn_sair_Func = Button(frame_btn_Cad_func, text='Cancelar', fg='blue',
+                           command=Tela_Cadastro_Func.destroy, font=fonte_normal)
+    btn_sair_Func.pack(side=RIGHT)
 
 
 def cadastrarFunc(func, setor, salb, bonus, mes, dias, dep):
@@ -842,6 +758,7 @@ def cadastrarFunc(func, setor, salb, bonus, mes, dias, dep):
             Tela_Cadastro_Func.lift()
             txt_Nome_Func.focus()
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="12")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
             Tela_Cadastro_Func.lift()
             txt_Nome_Func.focus()
@@ -870,37 +787,6 @@ def cadastrarFunc(func, setor, salb, bonus, mes, dias, dep):
         elif op == NO:
             Tela_Cadastro_Func.destroy()
             pass
-
-    '''try:
-        cursor = conexao.cursor()
-        nome   = input('\nNome do autor? ')
-        cursor.execute("INSERT INTO Autores (Id,Nome) VALUES (seqAutores.nextval,'"+nome+"')")
-        conexao.commit()
-    except oracledb.DataError as err:
-        print('DataBase error: {0}'.format(err), sys.exc_info()[0])
-    except oracledb.DatabaseError as err:
-        error, = err.args
-        print('Oracle-Error-Code:', error.code)
-        print('Oracle-Error-Message:', error.message)
-        if error.code == 1400:
-            print('Você deve inserir um nome para o Autor, não pode ser em branco', stack[1].function)
-            return
-        elif error.code == 1:
-            print('Autor repetido')
-            return
-        elif error.code == 936:
-            print('Erro de Sintax, favor verificar código', stack[1].function)
-        elif error.code == 933:
-            print('Favor usar "." ao invés de "," nos valores numéricos decimais')
-        elif error.code == 904:
-            print('Campo não encontrado na tabela')
-    except KeyError:
-        print('Erro de Sintax, favor verificar código', stack[1].function)
-    except:
-        print('DataBase error: {0}', sys.exc_info()[0])
-    else:
-        print('Autor cadastrado com sucesso')'''
-
 
 def ListaFun():
     global Tela_Lista_Func, tv
@@ -979,6 +865,7 @@ def listarFunc():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="13")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -1058,6 +945,7 @@ def listarINSS():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="14")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -1142,6 +1030,7 @@ def listarIRRF():
             messagebox.showerror(
                 error.code, 'Favor usar "." ao invés de "," nos valores numéricos decimais')
         elif error.code == 904:
+            #messagebox.showinfo(title="Entrou aqui!", message="15")
             messagebox.showerror(error.code, 'Campo não encontrado na tabela')
         elif error.code == 955:
             pass
@@ -1195,8 +1084,8 @@ def Calculo():
     btn.pack()
     lbl_Sal_Mensal = Label(Frame_Calc, text='Salário Mensal:')
     lbl_Sal_Mensal.pack(side=LEFT)
-    lbl_Resul_Sal_Mensal = Label(Frame_Calc, textvariable=sal_bruto)
-    lbl_Resul_Sal_Mensal.pack(side=RIGHT)
+    lbl_resul_sal_mensal = Label(Frame_Calc, textvariable=sal_bruto)
+    lbl_resul_sal_mensal.pack(side=RIGHT)
 
 
 def getval():
@@ -1217,183 +1106,169 @@ def getval():
         inss = (sal_bruto * 14)/100
         parc_inss = 148.71
 
-
 def centralizar_window(window):
-    windowWidth = window.winfo_reqwidth()
-    windowHeight = window.winfo_reqheight()
-    # messagebox.showinfo('Teste', 'Width' + str(windowWidth) + 'Height' + str(windowHeight))
+    window_width = window.winfo_reqwidth()
+    window_height = window.winfo_reqheight()
+    # messagebox.showinfo('Teste', 'Width' + str(window_width) + 'Height' + str(window_height))
     # Gets both half the screen width/height and window width/height
-    positionRight = int(window.winfo_screenwidth()/2 - windowWidth/1.5)
-    positionDown = int(window.winfo_screenheight()/2 - windowHeight/3.5)
+    position_right = int(window.winfo_screenwidth()/2 - window_width/1.5)
+    position_down = int(window.winfo_screenheight()/2 - window_height/3.5)
     # Positions the window in the center of the page.
-    window.geometry("+{}+{}".format(positionRight, positionDown))
-    '''print(windowWidth)
-    print(windowHeight)
-    print(window.winfo_screenwidth())
-    print(window.winfo_screenheight())
-    print(positionRight)
-    print(positionDown)
-    print('-------')'''
-
+    window.geometry("+{}+{}".format(position_right, position_down))
 
 def splash():
-    global Splash_Screen
+    global splash_screen
     connection()
     # Tela de apresentação
-    Splash_Screen = Tk()
-    centralizar_window(Splash_Screen)
-    # splash_Screen.eval('tk::PlaceWindow . center')
+    splash_screen = Tk()
+    centralizar_window(splash_screen)
+    # splash_screen.eval('tk::PlaceWindow . center')
     # Definindo o tamanho
-    # splash_Screen.geometry('250x100')
+    # splash_screen.geometry('250x100')
     # Removendo as bordas
-    Splash_Screen.overrideredirect(True)
-    Splash_Screen.config()
-    Label1 = Label(Splash_Screen, text='Bem vindo ao Gute Arbeit',
-                   fg='blue', font=fonte_Titulo).pack()
-    # TesteImage1(splash_Screen)
-    imagem = PhotoImage(file=sys.path[0] + '\\images\\GA1.png')
+    splash_screen.overrideredirect(True)
+    splash_screen.config()
+    Label1 = Label(splash_screen, text='Bem vindo ao Gute Arbeit', fg='blue', font=fonte_Titulo).pack()
+    # TesteImage1(splash_screen)
+    imagem = PhotoImage(file=sys.path[0] + './images/GA1.png')
     # img = imagem.subsample(1,1)
-    w = Label(Splash_Screen, image=imagem)
+    w = Label(splash_screen, image=imagem)
     w.imagem = imagem
     w.pack()
 
-    # Label2 = Label(splash_Screen, text='Carregando bibliotecas necessárias...', fg= "green", font=fonte_Normal).pack(side=BOTTOM)
+    # Label2 = Label(splash_screen, text='Carregando bibliotecas necessárias...', fg= "green", font=fonte_normal).pack(side=BOTTOM)
 
 # Tela de login
 
 
-def Tela_Login():
-    global txt_Id_Usuario, txt_Pass, Login_Tela
+def tela_login():
+    """Funçõa que cria a tela de login"""
+    global txt_id_usuario, txt_pass, login_tela
     # Fecha a janela de splash
     if tentativa <= 3:
-        Splash_Screen.destroy()
-
+        splash_screen.destroy()
     # Criando a tela de login
-    Login_Tela = Tk()
-    # login_Tela.geometry('400x150')
-    centralizar_window(Login_Tela)
-    Login_Tela.title('Login')
-    # login_Tela.eval('tk::PlaceWindow . center')
-    # login_Tela.iconbitmap('./images/GA4.png')
-    Login_Tela.config()
+    login_tela = Tk()
+    # login_tela.geometry('400x150')
+    centralizar_window(login_tela)
+    login_tela.title('Login')
+    # login_tela.eval('tk::PlaceWindow . center')
+    # login_tela.iconbitmap('./images/GA4.png')
+    login_tela.config()
 
     # Criado o frame do título
-    Frame_Login_titulo = Frame(Login_Tela).pack(side=TOP)
+    frame_login_titulo = Frame(login_tela).pack(side=TOP)
 
-    lbl_Titulo_Login = Label(
-        Frame_Login_titulo, text='LOGIN', font=fonte_Titulo)
-    lbl_Titulo_Login.pack()
+    lbl_titulo_login = Label(
+        frame_login_titulo, text='LOGIN', font=fonte_Titulo)
+    lbl_titulo_login.pack()
 
     # criando o frame de entrada de dados
-    Frame_Dados_Login = Frame(Login_Tela)
-    Frame_Dados_Login.pack()
+    frame_dados_login = Frame(login_tela)
+    frame_dados_login.pack()
 
-    lbl_User = Label(Frame_Dados_Login, text='Usuário:',
-                     font=fonte_Normal, width=10, fg='blue')
-    lbl_User.grid(row=0)
-    txt_Id_Usuario = Entry(Frame_Dados_Login, width=20, font=fonte_Texto)
-    txt_Id_Usuario.grid(row=0, column=1)
-    txt_Id_Usuario.focus()
-    label_Pass = Label(Frame_Dados_Login, text='Senha:',
-                       font=fonte_Normal, width=10, fg='blue')
-    label_Pass.grid(row=1)
-    txt_Pass = Entry(Frame_Dados_Login, width=20, font=fonte_Texto, show='*')
-    txt_Pass.grid(row=1, column=1)
+    lbl_user = Label(frame_dados_login, text='Usuário:',
+                     font=fonte_normal, width=10, fg='blue')
+    lbl_user.grid(row=0)
+    txt_id_usuario = Entry(frame_dados_login, width=20, font=fonte_Texto)
+    txt_id_usuario.grid(row=0, column=1)
+    txt_id_usuario.focus_set()
+    txt_id_usuario.icursor(0)
+    #txt_id_usuario.pack()
+
+
+    label_pass = Label(frame_dados_login, text='Senha:',
+                       font=fonte_normal, width=10, fg='blue')
+    label_pass.grid(row=1)
+    txt_pass = Entry(frame_dados_login, width=20, font=fonte_Texto, show='*')
+    txt_pass.grid(row=1, column=1)
 
     # Criando o frame dos botões
-    Frame_Btn = Frame(Login_Tela).pack(side=BOTTOM)
-    img_Sair = PhotoImage(file=sys.path[0] + './images/exit (2).png')
-    img_Sair = img_Sair.subsample(3, 3)
+    frame_btn = Frame(login_tela).pack(side=BOTTOM)
+    img_sair = PhotoImage(file=sys.path[0] + './images/exit (2).png')
+    img_sair = img_sair.subsample(3, 3)
     img_log = PhotoImage(file=sys.path[0] + './images/user1.png')
     img_log = img_log.subsample(3, 3)
-    btn_Entrar = Button(Frame_Btn, text='Login', fg='blue', width=55, height=25, command=lambda: logar(
-        txt_Id_Usuario, txt_Pass), image=img_log, compound=LEFT, font=fonte_Normal)
-    # btn_Entrar.bind('<Button-1>', logar)
-    btn_Entrar.imagem = img_log
-    btn_Entrar.pack(side=LEFT)
-    btn_Sair = Button(Frame_Btn, text='', fg='blue', command=Login_Tela.destroy,
-                      compound=LEFT, width=55, height=25, image=img_Sair, font=fonte_Normal)
-    btn_Sair.imagem = img_Sair
-    btn_Sair.pack(side=RIGHT)
+    btn_entrar = Button(frame_btn, text='Login', fg='blue', width=55, height=25, command=lambda:
+                logar(txt_id_usuario, txt_pass), image=img_log, compound=LEFT, font=fonte_normal)
+    # btn_entrar.bind('<Button-1>', logar)
+    btn_entrar.imagem = img_log
+    btn_entrar.pack(side=LEFT)
+    btn_sair = Button(frame_btn, text='', fg='blue', command=login_tela.destroy,
+                      compound=LEFT, width=55, height=25, image=img_sair, font=fonte_normal)
+    btn_sair.imagem = img_sair
+    btn_sair.pack(side=RIGHT)
 
-    # login_Tela.mainloop()
+    # login_tela.mainloop()
 
 # Função Sair
-
-
 def _quit():
-    Janela.quit()
-    Janela.destroy()
-    exit()
+    janela.quit()
+    janela.destroy()
+    sys.exit()
 
 # Iniciando o Layout da janela, como tamanho, posição, tema, botões, caixas de texto e etc.
-
-
 def programa():
-    global Janela
+    """Programa/Módulo principal"""
+    global janela
     connection()
     # Criação e Janela propriamente dita, definindo o objeto.
-    Janela = Tk()
-    Janela.title('Gute Arbeit Sistema de RH')
-    centralizar_window(Janela)
-    Janela.geometry('660x480+400+150')
+    janela = Tk()
+    janela.title('Gute Arbeit Sistema de RH')
+    centralizar_window(janela)
+    janela.geometry('660x480+400+150')
     # --- Criando o Menu
-    MenuBar = Menu(Janela)
-    Janela.config(menu=MenuBar)
+    menu_bar = Menu(janela)
+    janela.config(menu=menu_bar)
 
     # ---
-    # btn_Sair=Button(Janela, text='Sair', fg='blue', command=_quit)
-    # btn_Sair.pack(side=BOTTOM)
+    # btn_sair=Button(janela, text='Sair', fg='blue', command=_quit)
+    # btn_sair.pack(side=BOTTOM)
 
     # Menu Arquivo
-    Menu_Arq = Menu(MenuBar, tearoff=0)
-    # Menu_Arq.add_command(label="New")
-    # Menu_Arq.add_separator()
-    Menu_Arq.add_command(label="Sair", command=_quit)
-    MenuBar.add_cascade(label="Arquivo", menu=Menu_Arq)
+    menu_arq = Menu(menu_bar, tearoff=0)
+    # menu_arq.add_command(label="New")
+    # menu_arq.add_separator()
+    menu_arq.add_command(label="Sair", command=_quit)
+    menu_bar.add_cascade(label="Arquivo", menu=menu_arq)
     # Menu Cadastro
-    Menu_Cad = Menu(MenuBar, tearoff=0)
-    Menu_Cad.add_command(label="Funcionário", command=CadFunc)
-    Menu_Cad.add_separator()
-    Menu_Cad.add_command(label="Usuário Sistema", command=CadUser)
-    MenuBar.add_cascade(label="Cadastrar", menu=Menu_Cad)
+    menu_cad = Menu(menu_bar, tearoff=0)
+    menu_cad.add_command(label="Funcionário", command=CadFunc)
+    menu_cad.add_separator()
+    menu_cad.add_command(label="Usuário Sistema", command=cad_user)
+    menu_bar.add_cascade(label="Cadastrar", menu=menu_cad)
     # Menu Listagem
-    Menu_Lis = Menu(MenuBar, tearoff=0)
-    Menu_Lis.add_command(label="Funcionário", command=ListaFun)
-    Menu_Lis.add_separator()
-    Menu_Lis.add_command(label="Tabela INSS", command=ListaINSS)
-    Menu_Lis.add_command(label="Tabela IRRF", command=ListaIRRF)
-    Menu_Lis.add_separator()
-    Menu_Lis.add_command(label="Usuário Sistema", command=ListaUser)
-    MenuBar.add_cascade(label="Listar", menu=Menu_Lis)
+    menu_lis = Menu(menu_bar, tearoff=0)
+    menu_lis.add_command(label="Funcionário", command=ListaFun)
+    menu_lis.add_separator()
+    menu_lis.add_command(label="Tabela INSS", command=ListaINSS)
+    menu_lis.add_command(label="Tabela IRRF", command=ListaIRRF)
+    menu_lis.add_separator()
+    menu_lis.add_command(label="Usuário Sistema", command=ListaUser)
+    menu_bar.add_cascade(label="Listar", menu=menu_lis)
 
     # Menu Calculos
-    Menu_Calc = Menu(MenuBar, tearoff=0)
-    Menu_Calc.add_command(label="Cálculos", command=Calculo)
-    MenuBar.add_cascade(label='Cálculos', menu=Menu_Calc)
+    menu_calc = Menu(menu_bar, tearoff=0)
+    menu_calc.add_command(label="Cálculos", command=Calculo)
+    menu_bar.add_cascade(label='Cálculos', menu=menu_calc)
 
     # Painel Superior
-    PainelSuperior = Frame(Janela)
-    PainelSuperior["pady"] = 5
-    PainelSuperior.pack()
+    painel_superior = Frame(janela)
+    painel_superior["pady"] = 5
+    painel_superior.pack()
 
     # Título do Painel Superior
-    Titulo = Label(PainelSuperior, text="Güte Arbeit Sistema de RH",
+    titulo = Label(painel_superior, text="Güte Arbeit Sistema de RH",
                    justify='center', font=fonte_Titulo, fg='blue')
     # titulo["font"] = ("Arial", "16", "bold")
-    Titulo.pack()
+    titulo.pack()
 
     # Painel Central
-    Painel_Central = Frame(Janela)
-    Painel_Central.pack()
-
-    #
-
-    # janela.mainloop()
+    painel_central = Frame(janela)
+    painel_central.pack()
 
 
 splash()
-Splash_Screen.after(2000, Tela_Login)
-
+splash_screen.after(2000, tela_login)
 
 mainloop()
